@@ -1,27 +1,14 @@
-import React, { ReactNode, useContext, useEffect, useState } from "react";
+import React, { ReactNode, useContext, FC, useEffect } from "react";
 import { AuthContext } from "../Store/authContext";
-import { Login } from "../Components/Auth/Login";
-import HomeView from "../Components/Home/HomeView";
+import GameView from "../Components/Game/GameView";
+import Login from "../Components/Auth/Login";
+import { useParams } from "react-router-dom";
 import { validateToken } from "../APIcalls/AuthCalls";
-export type Invite = {
-    id: string
-    invitee: string
-    inviter: string
-    playerStarting: string
-}
-export type HomeViewModel = {
-    userName?: string
-    ownInvites?: Invite[]
-    invites?: Invite[]
-    
-}
-// const emptyHomeViewModel: HomeViewModel = {
-//     userName: "", ownInvites=[], invites=[]
-// }
 
-export const HomePage = () => {    
+
+export const GamePage : React.FC = () => {
+    const { id } = useParams<string>();
     const authCtx = useContext(AuthContext);
-    
     const isLoggedIn = authCtx.isLoggedIn;
     useEffect(() => {
         const checkLogIn = async () =>{
@@ -34,17 +21,12 @@ export const HomePage = () => {
         };
         checkLogIn();
     }, []);
-
-    let page: ReactNode;
-    if (!isLoggedIn)
-        {
-
-        }    
+    let page: ReactNode;  
     if (isLoggedIn) {
-        page = <HomeView/>;
+        page = <GameView guid={id}/>;
     } else {
         page = <Login />;
     }
-    return page;
+    return page; 
 
 }

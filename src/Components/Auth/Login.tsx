@@ -29,7 +29,7 @@ export const Login = () => {
             formBody.set("Password", enteredPassword);
             formBody.set("Audience", 'https://localhost:44347/')
             fetch(
-                'https://localhost:5001/User/Login',
+                'https://localhost:5001/User/login',
                 {
                     method: 'POST',
                     body: formBody
@@ -37,9 +37,8 @@ export const Login = () => {
                 .then(res => {
                     if (res.ok) {
                         res.json().then(data => {
-                            authCtx.login(data.access_token,"User");
+                            authCtx.login(data.access_token,data.user);
                             console.log(data);
-                            localStorage.setItem("token",data.access_token);
                         })
                         .catch((err) => {
                             alert(err.message);

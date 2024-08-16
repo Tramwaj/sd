@@ -26,20 +26,23 @@ export const AuthContextProvider = (props: any) => {
 
     const loginHandler = (token: string, user: string) => {
         setToken(token);
-        setUser(user);        
-        localStorage.setItem("token",token);
-        localStorage.setItem("user",user);
+        setUser(user);
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", user);
     }
     const logoutHandler = () => {
         setToken("");
         setUser("");
     }
-    const refreshLogin = () => {
+    const refreshLogin = async () => {
         if (localStorage.getItem("token")) {
-            setToken(localStorage.getItem("token")!);
-            setUser(localStorage.getItem("user")!);
+            const token = localStorage.getItem("token");
+            const user = localStorage.getItem("user");
+            // if (token && user) {
+            //     loginHandler(token, user);
+            // }
         }
-        //todo: tutaj sprawdzenie tokena na serwerze
+        //todo: tutaj sprawdzenie tokena na serwerze, i w ogole troche inaczej
     }
     const contextValue: LoginData = {
         isLoggedIn: userIsLoggedIn,
@@ -49,6 +52,18 @@ export const AuthContextProvider = (props: any) => {
         logout: logoutHandler,
         refreshLogin: refreshLogin,
     }
+    // const validateToken = async (token: string) => {
+    //     const response = await fetch('https://localhost:5001/User/ValidateToken', {
+    //         method: "GET",
+    //         headers: {
+    //             "Authorization": `Bearer ${token}`
+    //         }
+    //     });
+    //     if (response.ok) {
+    //         return true;
+    //     }
+    //     return false;
+    // }
     return (
         <AuthContext.Provider value={contextValue}>
             {props?.children}

@@ -1,0 +1,42 @@
+.box{
+    border: 2px solid orange;
+}
+.card-container{
+    display: flex;
+    flex-flow: column;
+    height: 20%;
+    width: 10%;
+    min-height: 20vh;
+    min-width: 15vh;
+    margin: 20px;
+    background-color:grey;
+    font-size:larger;
+    color:black;
+}
+.top{
+    flex:1;
+    display: flex;
+    flex-flow: row;
+}
+.points{
+    flex: 1;
+}
+.crowns{
+    flex:1
+}
+.miningPower{
+    flex:2
+}
+.bot{
+    flex:4;
+    color:black;
+    display: flex;
+    flex-flow: column-reverse;
+}
+.dot{
+    height: 3vh;
+    width: 3vh;
+    border-radius: 50%;
+    display: inline-block;
+    color: grey;
+}
