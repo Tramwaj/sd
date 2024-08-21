@@ -1,18 +1,20 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../Store/authContext';
-import { Cards, GameState } from './GameTypes';
+import { Cards, CoinBoard, GameState, PlayerBoard } from './GameTypes';
 import CardBoard from './CardBoard';
+import CoinBoardView from './CoinBoardView';
+import './GameView.css';
+import PlayerBoardsView from './PlayerBoardsView';
 
 const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const [gameState, setGameState] = useState<GameState | null>(null);
+    const [cards, setCards] = useState<Cards | null>(null);
+    const [coinBoard, setCoinBoard] = useState<CoinBoard | null>(null);
+    const [player1Board, setPlayer1Board] = useState<PlayerBoard | null>(null);
+    const [player2Board, setPlayer2Board] = useState<PlayerBoard | null>(null);
     const authCtx = useContext(AuthContext);
     const bearer = "Bearer " + authCtx.token;
     const str = `https://localhost:5001/Game/GetGameState?id=${props.guid}`;
-    const cards: Cards = {
-        level1: gameState?.board.level1,
-        level2: gameState?.board.level2,
-        level3: gameState?.board.level3,
-    } 
 
     useEffect(() => {
         if (!props.guid) {
@@ -22,33 +24,54 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             console.log('fetching game state');
             try {
                 const response = await fetch(
-                    str,{
-                        method: "GET",
-                        headers: {
-                            "Authorization": bearer
-                        }
-                    });
+                    str, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": bearer
+                    }
+                });
                 const data = await response.json();
                 setGameState(data);
+                setCards({
+                    level1: data.board.level1,
+                    level2: data.board.level2,
+                    level3: data.board.level3,
+                });
+                setCoinBoard(data.board.coinBoard);
+                setPlayer1Board(data.board.player1Board);
+                setPlayer2Board(data.board.player2Board);
+                // console.log("cards in gameview:",cards);
+                // console.log("gamestate in gameview:",gameState);
+                // console.log("level1 in gameview:",gameState?.board.level1);
             } catch (error) {
                 console.error('Error fetching game state:', error);
             }
         };
 
         fetchData();
-    }, []);
+    }, [str, bearer, props.guid]);
 
     if (!gameState) {
         return <div>Loading...</div>;
     }
 
-    return (
-        <div>
-            <h1>Game State:</h1>
-            <CardBoard cards={cards}/>
-            <p>{JSON.stringify(gameState)}</p>
+    let page: React.ReactNode;
+    page = (
+        <div id="grid">
+            <div id="playerBoards">
+                {(player1Board) && (player2Board) && 
+                <PlayerBoardsView player1board={player1Board} player2Board={player2Board} />
+                    }
+            </div>
+            <div id="cards">
+                {(cards) && <CardBoard cardsProps={cards} />}
+            </div>
+            <div id="coinBoard">
+                {(coinBoard) && <CoinBoardView coinBoardProps={coinBoard} />}
+            </div>
         </div>
     );
+    return page;
 };
 
 export default GameView;
