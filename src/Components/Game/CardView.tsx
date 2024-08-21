@@ -3,6 +3,7 @@ import "./CardView.css";
 import { Card, ColourEnum } from "./GameTypes";
 import { ReactComponent as Crown } from "./whiteCrown.svg";
 import { Button } from "react-bootstrap";
+import { cardDisplayColour, fontColour } from "../Globals/StyleFunctions";
 
 //todo: insert the smaller "coin" (as on CoinBoard) in the card cost
 const CardView: React.FC<{ cardProps: Card, selectCard: (cardId: number | undefined) => void }> = (props) => {
@@ -12,22 +13,7 @@ const CardView: React.FC<{ cardProps: Card, selectCard: (cardId: number | undefi
         if (card !== null && card.id !== undefined)
             props.selectCard(card?.id);
     };
-    const fontColour = (colour: ColourEnum) => {
-        switch (colour.toString()) {
-            case "Black":
-                return "White";
-            default:
-                return "Black";
-        }
-    }
-    const cardDisplayColour = (colour: ColourEnum) => {
-        switch (colour.toString()) {
-            case "Multi":
-                return "Pink";
-            default:
-                return colour.toString();
-        }
-    };
+    
     useEffect(() => {
         setCard(props.cardProps);
         setCardColour(props.cardProps.colour);
