@@ -34,12 +34,12 @@ export type CoinBoard = {
 export type PlayerBoard = {
     hiddenCards: Card[];
     scrollsCount: number;
-    pointsByColour: Record<ColourEnum, number>;
+    pointsByColour: Map<ColourEnum, number>;
     totalPoints: number;
     crowns: number;
     ownedCards: Card[];
-    miningValues: Record<ColourEnum, number>;
-    coins: Record<ColourEnum, number>;
+    miningValues: Map<ColourEnum, number>;
+    coins: Map<ColourEnum, number>;
     hiddenCardsCount: number;
 }
 export type Card = {
@@ -56,16 +56,17 @@ export type SingleCost = {
     amount: number;
 }
 export enum ColourEnum {
-    White = 0,
-    Blue = 1,
-    Green = 2,
-    Red = 3,
-    Black = 4,
-    Pink = 5,
-    Grey = 6,
-    Multi = 7,
-    Gold = 8
-}export enum ColourEnumFont {
+    White = "White",
+    Blue = "Blue",	
+    Green = "Green",
+    Red = "Red",
+    Black = "Black",
+    Pink = "Pink",
+    Grey = "Grey",
+    Multi = "Multi",
+    Gold = "Gold"
+}
+export enum ColourEnumFont {
     White = "Black",
     Blue = "Black",
     Green = "Black",
