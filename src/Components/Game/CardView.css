@@ -1,31 +1,47 @@
 .box{
     border: 2px solid orange;
 }
+.box:hover{
+    border: 2px solid red;
+}
 .card-container{
     display: flex;
     flex-flow: column;
-    height: 20%;
-    width: 10%;
-    min-height: 20vh;
-    min-width: 15vh;
-    margin: 20px;
+    width: 6%;
+    aspect-ratio: 1/1.5;
+    min-height: 10vh;
+    min-width: 5vw;
+    margin-right: 3px;
     background-color:grey;
-    font-size:larger;
+    font-size:100%;
     color:black;
 }
 .top{
     flex:1;
+    align-self: stretch;
+    align-items: center;
     display: flex;
     flex-flow: row;
+    justify-content: end;
+    box-sizing: border-box;
 }
 .points{
     flex: 1;
+    font-size: 100%;
 }
 .crowns{
-    flex:1
+    height: 50%;    
+    flex:1;
+    flex-direction: row;
+    display: flex;
+    margin-bottom: 5px;
 }
 .miningPower{
-    flex:2
+    flex:2;
+    font-size: 100%;
+    margin-left: 10%;
+    align-self: right;    
+    display: inline-block;
 }
 .bot{
     flex:4;
@@ -34,9 +50,11 @@
     flex-flow: column-reverse;
 }
 .dot{
-    height: 3vh;
-    width: 3vh;
+    font-size: 80%;
+    height: 18%;
+    aspect-ratio: 1/1;
     border-radius: 50%;
     display: inline-block;
-    color: grey;
+    text-align: center;
+    margin:1px;
 }
