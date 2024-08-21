@@ -28,8 +28,8 @@ export type CardLevel = {
     deckCount: number;
 }
 export type CoinBoard = {
-    CoinsOnBoard: ColourEnum[][];
-    ScrollCount: number;
+    coinsOnBoard: ColourEnum[][];
+    scrollCount: number;
 }
 export type PlayerBoard = {
     hiddenCards: Card[];
@@ -48,16 +48,12 @@ export type Card = {
     points: number;
     miningPower: number;
     crowns: number;
-    cardCost: [ColourEnum, number][];
+    cardCost: SingleCost[];
     action?: CardActionEnum;
 }
-export type CardCost = {
-    white: number;
-    blue: number;
-    green: number;
-    red: number;
-    black: number;
-    pink: number;
+export type SingleCost = {
+    colour: ColourEnum;
+    amount: number;
 }
 export enum ColourEnum {
     White = 0,
@@ -69,6 +65,16 @@ export enum ColourEnum {
     Grey = 6,
     Multi = 7,
     Gold = 8
+}export enum ColourEnumFont {
+    White = "Black",
+    Blue = "Black",
+    Green = "Black",
+    Red = "Black",
+    Black = "White",
+    Pink = "Black",
+    Grey = "Black",
+    Multi = "Black",
+    Gold = "Black"
 }
 export enum CardActionEnum {
     ExtraTurn = 1,
