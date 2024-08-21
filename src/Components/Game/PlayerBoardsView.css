@@ -1,0 +1,24 @@
+.playerBoards {
+  display: grid;
+  width:100%;
+  height:100%;
+  justify-content: space-around;
+  margin-top: 20px;
+  grid-template-rows: 1fr 1fr ;
+  grid-template-columns: 100%;;
+}
+.playerBoard {
+    width: 100%; 
+    height: 40vh;
+}
+.colour {
+    display: flex;
+    border:1px solid black;
+    flex-flow: row;
+    justify-content: space-between;
+    width: 100%;
+    height: 14%;
+    justify-content: stretch;
+    align-items: stretch;
+    margin-top: 10px;
+}

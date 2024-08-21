@@ -12,6 +12,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const [coinBoard, setCoinBoard] = useState<CoinBoard | null>(null);
     const [player1Board, setPlayer1Board] = useState<PlayerBoard | null>(null);
     const [player2Board, setPlayer2Board] = useState<PlayerBoard | null>(null);
+    const [player1Turn, setPlayer1Turn] = useState<boolean>(true);
     const authCtx = useContext(AuthContext);
     const bearer = "Bearer " + authCtx.token;
     const str = `https://localhost:5001/Game/GetGameState?id=${props.guid}`;
@@ -40,6 +41,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
                 setCoinBoard(data.board.coinBoard);
                 setPlayer1Board(data.board.player1Board);
                 setPlayer2Board(data.board.player2Board);
+                setPlayer1Turn(data.player1Turn);
                 // console.log("cards in gameview:",cards);
                 // console.log("gamestate in gameview:",gameState);
                 // console.log("level1 in gameview:",gameState?.board.level1);
@@ -60,7 +62,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         <div id="grid">
             <div id="playerBoards">
                 {(player1Board) && (player2Board) && 
-                <PlayerBoardsView player1board={player1Board} player2Board={player2Board} />
+                <PlayerBoardsView player1board={player1Board} player2Board={player2Board} player1Turn={player1Turn} />
                     }
             </div>
             <div id="cards">
