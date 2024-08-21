@@ -1,6 +1,9 @@
 #grid {
     display: grid;
+    justify-content: stretch;
     grid-template-columns: 0.5fr 2fr 1fr;
-    grid-gap: 10px;
-    margin: 20px;
+    height: 80vh;
+    align-items: stretch;
+    grid-gap: 5px;
+    margin: 15px;
 }

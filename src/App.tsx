@@ -1,9 +1,9 @@
 import React from 'react';
 import logo from './logo.svg';
-import './App.css';
+//import './App.css';
 import { HomePage } from './Pages/HomePage';
 import { Route, Routes } from 'react-router-dom';
-import { GamePage } from './Pages/GamePage'; // Import the GamePage component
+import { GamePage } from './Pages/GamePage';
 import Header from './Components/Layout/Header';
 
 function App() {
