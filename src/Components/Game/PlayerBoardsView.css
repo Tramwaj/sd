@@ -3,22 +3,66 @@
   width:100%;
   height:100%;
   justify-content: space-around;
-  margin-top: 20px;
   grid-template-rows: 1fr 1fr ;
-  grid-template-columns: 100%;;
+  grid-template-columns: 100%;;  
 }
 .playerBoard {
     width: 100%; 
     height: 40vh;
+    border: 1px solid blue;
 }
-.colour {
+.totals {
+    font-weight: bold;
     display: flex;
-    border:1px solid black;
     flex-flow: row;
     justify-content: space-between;
     width: 100%;
     height: 14%;
     justify-content: stretch;
-    align-items: stretch;
+    align-items: center;
     margin-top: 10px;
+}
+.colour {
+    display: flex;
+    border:1px solid black;
+    flex-flow: row;
+    justify-content:space-between;
+    width: 100%;
+    height: 14%;
+    justify-content: stretch;
+    align-items: stretch;
+    margin-top: 1px;
+}
+.miningPower{
+    font-size: 100%;
+    margin-left: 10%;
+    justify-items: left;        
+    justify-content: left;
+}
+.rect{
+    height: 80%;
+    width:18%;
+    display: inline-block;
+    margin:1px;
+}
+.coins{
+    font-size: 100%;
+    margin-left: 10%;
+    align-items: center;
+    justify-content: left;        
+    justify-content: left;
+}
+.coinDot{
+    height: 40%;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    display: inline-block;
+    margin:1px;
+}
+.points{
+    font-size: 100%;
+    font-weight: bold;
+    margin-left: 10%;
+    text-align: end;        
+    justify-content: end;
 }
