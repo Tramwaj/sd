@@ -5,19 +5,28 @@
     gap: 1px;
     width: 100%;
     aspect-ratio: 1/1;
-    background-color: #bbada0;
+    background-color: grey;
     border-radius: 5px;
     padding: 5px;
     align-items: center;
     justify-items: center;
 }
+.coinSpace{
+    width: 100%;
+    height: 100%;
+    margin:1px;
+    align-items: center;
+    display: flex;
+    justify-items: center;
+    border-radius: 100%;
+}
 
 .coin{
     font-size: 80%;
     height: 70%;
-    aspect-ratio: 1/1;
+    border: none;
+    aspect-ratio: 1/1;    
     border-radius: 50%;
     display: inline-block;
-    text-align: center;
-    margin:1px;
+    margin: 0 auto;
 }
