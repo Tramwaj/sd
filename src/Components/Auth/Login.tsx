@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useState, useRef } from "react";
 
-import {AuthContext} from '../../Store/authContext';
+import { AuthContext } from '../../Store/authContext';
 import { eventNames } from "process";
 import classes from './AuthForm.module.css'
 
@@ -24,51 +24,55 @@ export const Login = () => {
         setIsLoading(true);
 
         if (isLogin) {
-            var formBody = new FormData();
-            formBody.set("UserName", enteredLogin);
-            formBody.set("Password", enteredPassword);
-            formBody.set("Audience", 'https://localhost:44347/')
-            fetch(
-                'https://localhost:5001/User/login',
-                {
-                    method: 'POST',
-                    body: formBody
-                })
-                .then(res => {
-                    if (res.ok) {
-                        res.json().then(data => {
-                            authCtx.login(data.access_token,data.user);
-                            console.log(data);
-                        })
-                        .catch((err) => {
-                            alert(err.message);
-                        });
-                    }
-                    else {
-                        console.log('fail');
-                    };
-                });
+            try {
+                var formBody = new FormData();
+                formBody.set("UserName", enteredLogin);
+                formBody.set("Password", enteredPassword);
+                formBody.set("Audience", 'https://localhost:44347/')
+                fetch(
+                    'https://localhost:5001/User/login',
+                    {
+                        method: 'POST',
+                        body: formBody
+                    })
+                    .then(res => {
+                        if (res.ok) {
+                            res.json().then(data => {
+                                authCtx.login(data.access_token, data.user);
+                                console.log(data);
+                            })
+                                .catch((err) => {
+                                    alert(err.message);
+                                });
+                        }
+                        else {
+                            console.log('fail');
+                        };
+                    });
+            } catch (err) {
+                console.log(err);
+            }
         }
         setIsLoading(true);
     }
     return (
         <section className={classes.auth}>
-    <h1>{isLogin ? 'Login' : 'Sign Up'}</h1>
-    <form onSubmit={submitHandler}>
-        <div className={classes.control}>
-            <label htmlFor='email'>Email</label>
-            <input type='text'
-                id='email'
-                required ref={loginInputRef} />
-        </div>
-        <div className={classes.control}>
-            <label htmlFor='password'>Hasło</label>
-            <input
-                type='password'
-                id='password'
-                required ref={passwordInputRef}
-            />
-        </div>
+            <h1>{isLogin ? 'Login' : 'Sign Up'}</h1>
+            <form onSubmit={submitHandler}>
+                <div className={classes.control}>
+                    <label htmlFor='email'>Email</label>
+                    <input type='text'
+                        id='email'
+                        required ref={loginInputRef} />
+                </div>
+                <div className={classes.control}>
+                    <label htmlFor='password'>Hasło</label>
+                    <input
+                        type='password'
+                        id='password'
+                        required ref={passwordInputRef}
+                    />
+                </div>
                 <div className={classes.actions}>
                     {!isLoading && < button > {isLogin ? 'Zaloguj' : 'Utwórz konto'}</button>}
                     {isLoading && <p>Sending request...</p>}
@@ -80,8 +84,8 @@ export const Login = () => {
                         {isLogin ? 'Utwórz nowe konto' : 'Zaloguj się na istniejące konto'}
                     </button> */}
                 </div>
-    </form>
-</section>
-    )    
+            </form>
+        </section>
+    )
 }
 export default Login;
