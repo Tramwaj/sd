@@ -5,6 +5,8 @@ import CardBoard from './CardBoard';
 import CoinBoardView from './CoinBoardView';
 import './GameView.css';
 import PlayerBoardsView from './PlayerBoardsView';
+import { HubConnectionBuilder, IHttpConnectionOptions } from '@microsoft/signalr';
+
 
 const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const [gameState, setGameState] = useState<GameState | null>(null);
@@ -16,6 +18,38 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const authCtx = useContext(AuthContext);
     const bearer = "Bearer " + authCtx.token;
     const str = `https://localhost:5001/Game/GetGameState?id=${props.guid}`;
+
+    const connection = new HubConnectionBuilder()
+        .withUrl("https://localhost:5001/gameHub", {
+            accessTokenFactory: () => authCtx.token,
+            withCredentials: true
+        } as IHttpConnectionOptions)
+        .build();
+
+    connection.on("ReceiveMessage", (message) => {
+        console.log("Message received: " + message);
+    });
+    connection.on("Message", (message) => {
+        console.log("Message: " + message);
+    });
+
+    connection.start().then(() => {
+        console.log("Connection started");
+        if (props.guid) {
+            connection.invoke("SubscribeToGame", props.guid).catch((err) => {
+                console.log("Error while subscribing to game: " + err)
+            });
+        }
+    }).catch((err) => {
+        console.log("Error while starting connection: " + err)
+    });
+
+
+
+    // connection.start().then(() => {
+    //     console.log("Connection started");
+    // }).catch((err) => {
+    //     console.log("Error while starting connection: " + err)});
 
     useEffect(() => {
         if (!props.guid) {
@@ -61,9 +95,9 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     page = (
         <div id="grid">
             <div id="playerBoards">
-                {(player1Board) && (player2Board) && 
-                <PlayerBoardsView player1board={player1Board} player2Board={player2Board} player1Turn={player1Turn} />
-                    }
+                {(player1Board) && (player2Board) &&
+                    <PlayerBoardsView player1board={player1Board} player2Board={player2Board} player1Turn={player1Turn} />
+                }
             </div>
             <div id="cards">
                 {(cards) && <CardBoard cardsProps={cards} />}
