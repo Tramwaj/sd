@@ -57,7 +57,7 @@ export type SingleCost = {
 }
 export enum ColourEnum {
     White = "White",
-    Blue = "Blue",	
+    Blue = "Blue",
     Green = "Green",
     Red = "Red",
     Black = "Black",
@@ -83,4 +83,18 @@ export enum CardActionEnum {
     Steal = 3,
     Scroll = 4,
     None = 5
+}
+export type Action = {
+    type: ActionType;
+    gameId: string | undefined;
+    payload: any;
+}
+export enum ActionType {
+    GetCoins = "getCoins",
+    DropCoins = "dropCoins",
+    ShuffleCoins = "shuffleCoins",
+    BuyCard = "buyCard",
+    ReserveCard = "reserveCard",
+    GetNoble = "getNoble",
+    TradeScroll = "tradeScroll",
 }

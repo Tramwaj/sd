@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { CoinBoard, ColourEnum } from "./GameTypes";
+import { Action, ActionType, CoinBoard, ColourEnum } from "./GameTypes";
 import "./CoinBoardView.css";
 import { fontColour } from "../Globals/StyleFunctions";
 interface coinCoords {
@@ -7,7 +7,7 @@ interface coinCoords {
     y: number
 }
 
-const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard }> = (props) => {
+const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, sendAction: (action:Action) => void }> = (props) => {
     const [coinBoard, setCoinBoard] = React.useState<CoinBoard | null>(null);
     const [selectedCoins, setSelectedCoins] = React.useState<coinCoords[]>([]);
 
@@ -61,6 +61,14 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard }> = (props) => {
         }
         return "none";
     }
+    const sendBoardShuffleAction = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const action:Action = {
+            type: ActionType.ShuffleCoins,
+            gameId: undefined,
+            payload: ""
+        }
+        props.sendAction(action);
+    }
 
     return (
         <div className="coinBoardContainer">
@@ -78,7 +86,7 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard }> = (props) => {
                 ))}
             </div>
             <div className="coinBoardFooter">
-                <button className="shuffleBtn">Shuffle</button>
+                <button className="shuffleBtn" onClick={sendBoardShuffleAction}>Shuffle</button>
                 <button className="CancelBtn" onClick={clearSelectedCoins}>Cancel</button>
                 <button className="ConfirmBtn" disabled={selectedCoins.length<1?true:false}>Confirm</button>
             </div>
