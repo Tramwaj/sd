@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../Store/authContext';
-import { Action, Cards, CoinBoard, GameState, PlayerBoard } from './GameTypes';
+import { Action, CardLevel, CoinBoard, GameState, PlayerBoard } from './GameTypes';
 import CardBoard from './CardBoard';
 import CoinBoardView from './CoinBoardView';
 import './GameView.css';
@@ -11,7 +11,7 @@ import { postAction } from '../../APIcalls/GameCalls';
 
 const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const [gameState, setGameState] = useState<GameState | null>(null);
-    const [cards, setCards] = useState<Cards | null>(null);
+    const [cards, setCards] = useState<CardLevel[]>([]);
     const [coinBoard, setCoinBoard] = useState<CoinBoard | null>(null);
     const [player1Board, setPlayer1Board] = useState<PlayerBoard | null>(null);
     const [player2Board, setPlayer2Board] = useState<PlayerBoard | null>(null);
@@ -69,11 +69,8 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             });
             const data = await response.json();
             setGameState(data);
-            setCards({
-                level1: data.board.level1,
-                level2: data.board.level2,
-                level3: data.board.level3,
-            });
+            const arrLvl = [data.board.level1, data.board.level2, data.board.level3];
+            setCards(arrLvl);   
             setCoinBoard(data.board.coinBoard);
             setPlayer1Board(data.board.player1Board);
             setPlayer2Board(data.board.player2Board);

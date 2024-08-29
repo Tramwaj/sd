@@ -18,11 +18,6 @@ export type Board = {
     player1Board: PlayerBoard,
     player2Board: PlayerBoard
 }
-export type Cards = {
-    level1: CardLevel | undefined,
-    level2: CardLevel | undefined,
-    level3: CardLevel | undefined,
-}
 export type CardLevel = {
     exposed: Array<Card>;
     deckCount: number;

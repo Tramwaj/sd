@@ -1,32 +1,33 @@
 import React from 'react';
-import { Card, Cards, ColourEnum, SingleCost } from './GameTypes';
+import { Card, CardLevel, ColourEnum, SingleCost } from './GameTypes';
 import CardView from './CardView';
-import {ReactComponent as Crown} from "./crown.svg";
+import { ReactComponent as Crown } from "./crown.svg";
 import CardsLevelView from './CardsLevel';
 
-const CardBoard: React.FC<{cardsProps:Cards}> = (props) => {
-    const [cards, setCards] = React.useState<Cards | null>(null);
+const CardBoard: React.FC<{ cardsProps: CardLevel[] }> = (props) => {
+    const [level1, setLevel1] = React.useState<CardLevel | null>(null);
+    const [level2, setLevel2] = React.useState<CardLevel | null>(null);
+    const [level3, setLevel3] = React.useState<CardLevel | null>(null);
+
+
     const getCards = () => {
-        setCards({
-            level1: props.cardsProps.level1,
-            level2: props.cardsProps.level2,
-            level3: props.cardsProps.level3,
-        } );
-    }
+        setLevel1(props.cardsProps[0] || null);
+        setLevel2(props.cardsProps[1]);
+        setLevel3(props.cardsProps[2]);
+        };
     React.useEffect(() => {
         getCards();
-        console.log('cards:', cards);
         console.log('cardsProps:', props.cardsProps);
     }, []);
-    
+
     return (
         <div>
-            {(cards?.level3) &&<div>
-                <CardsLevelView levelProps={cards.level3}/></div>}
-            {(cards?.level2) &&<div>
-                <CardsLevelView levelProps={cards.level2}/></div>}
-            {(cards?.level1) &&<div>
-                <CardsLevelView levelProps={cards.level1}/></div>}            
+            {(level3) && <div>
+                <CardsLevelView levelProps={level3} /></div>}
+            {(level2) && <div>
+                <CardsLevelView levelProps={level2} /></div>}
+            {(level1) && <div>
+                <CardsLevelView levelProps={level1} /></div>}
         </div>
     );
 }
