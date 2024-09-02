@@ -74,7 +74,7 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, sendAction: (action:A
         <div className="coinBoardContainer">
             <div className="board">
                 {props.coinBoardProps.coinsOnBoard.map((nested, y) => nested.map((coin, x) =>
-                    <div className="coinSpace" style={{border: borderIfSelected(x, y, coin)}}>
+                    <div key={x*100+y} className="coinSpace" style={{border: borderIfSelected(x, y, coin)}}>
                         <button key={x * 10 + y}
                             id={x.toString() + "/" + y.toString()}
                             onClick={selectCoin}
@@ -85,6 +85,7 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, sendAction: (action:A
                     </div>
                 ))}
             </div>
+            <div className="Scrolls">{coinBoard?.scrollCount}</div>
             <div className="coinBoardFooter">
                 <button className="shuffleBtn" onClick={sendBoardShuffleAction}>Shuffle</button>
                 <button className="CancelBtn" onClick={clearSelectedCoins}>Cancel</button>
