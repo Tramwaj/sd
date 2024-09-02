@@ -9,11 +9,19 @@ export type Invite = {
     inviter: string
     playerStarting: string
 }
+export type Duel = {
+    id: string
+    player1: string
+    player2: string
+    startingTime: string,
+    endTime: string
+}
 export type HomeViewModel = {
     userName?: string
     ownInvites?: Invite[]
     invites?: Invite[]
-    
+    currentDuels?: Duel[]
+    pastDuels?: Duel[]    
 }
 // const emptyHomeViewModel: HomeViewModel = {
 //     userName: "", ownInvites=[], invites=[]

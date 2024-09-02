@@ -1,9 +1,8 @@
 import React, { ReactNode, useContext, useEffect, useState } from "react";
-import { HomeViewModel, Invite } from "../../Pages/HomePage";
+import { Duel, HomeViewModel, Invite } from "../../Pages/HomePage";
 import { InvitesList } from "./InvitesList";
 import { AuthContext } from "../../Store/authContext";
-import { get } from "https";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 
 
 export const HomeView = () => {
@@ -87,6 +86,9 @@ export const HomeView = () => {
     let ownInvites: Invite[];
     if (viewModel?.ownInvites) ownInvites = viewModel.ownInvites
     else ownInvites = [];
+    let currentDuels: Duel[];
+    if (viewModel?.currentDuels) {currentDuels = viewModel.currentDuels}
+    else currentDuels = [];
     return (
         <div>
             {renderNavigate(gameId)}
@@ -101,6 +103,16 @@ export const HomeView = () => {
                         onclickAccept={undefined}
                         buttonReject="Anuluj" 
                         onclickReject={rejectInvite} />
+                        {currentDuels.map((duel) => {
+                            return (
+                                <div key={duel.id}>
+                                    <Link to={"/Game/" + duel.id}>
+                                    <p>{duel.player1} vs {duel.player2}</p>
+                                    </Link>
+                                </div>
+                            )
+                        })};
+                        
         </div>)
 }
 export default HomeView;
