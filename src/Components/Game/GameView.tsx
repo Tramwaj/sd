@@ -6,7 +6,8 @@ import CoinBoardView from './CoinBoardView';
 import './GameView.css';
 import PlayerBoardsView from './PlayerBoardsView';
 import { HubConnection, HubConnectionBuilder, HubConnectionState, IHttpConnectionOptions } from '@microsoft/signalr';
-import { postAction } from '../../APIcalls/GameCalls';
+import { createPlayerBoardFromResponse, postAction } from '../../APIcalls/GameCalls';
+import { fetchGameState as fetchGameState } from '../../APIcalls/GameCalls';
 
 
 const GameView: React.FC<{ guid: string | undefined }> = (props) => {
@@ -16,12 +17,14 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const [player1Board, setPlayer1Board] = useState<PlayerBoard | null>(null);
     const [player2Board, setPlayer2Board] = useState<PlayerBoard | null>(null);
     const [player1Turn, setPlayer1Turn] = useState<boolean>(true);
+    const [dataFetched, setDataFetched] = useState<boolean>(false);
+    const [connection, setConnection] = useState<HubConnection | null>(null);
     const authCtx = useContext(AuthContext);
     const bearer = "Bearer " + authCtx.token;
     const str = `https://localhost:5001/Game/GetGameState?id=${props.guid}`;
 
     const setUpSignalRConection = () => {
-        const connection =new HubConnectionBuilder()
+        const connection = new HubConnectionBuilder()
             .withUrl("https://localhost:5001/gameHub", {
                 accessTokenFactory: () => authCtx.token,
                 withCredentials: true
@@ -38,10 +41,24 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             console.log("CoinBoard received: " + coinBoard);
             setCoinBoard(coinBoard);
         });
+        connection.on("ReceiveActionStatus", (status, app) => {
+            console.log("ActionStatus received: " + status + app);
+        });
+        connection.on("ReceivePlayerBoard", (playerBoard, playerName) => {
+            console.log("PlayerBoard received: " + playerBoard);
+            const board = createPlayerBoardFromResponse(playerBoard);
+            if (gameState?.player1.name === playerName) {
+                //setPlayer1Board(null);
+                setPlayer1Board(board);
+            } else {
+                //setPlayer1Board(null);
+                setPlayer2Board(board);
+            }
+        });
 
         connection.start().then(() => {
             console.log("Connection started");
-            if (props.guid&& connection.state === HubConnectionState.Connected) {
+            if (props.guid && connection.state === HubConnectionState.Connected) {
                 connection.invoke("SubscribeToGame", props.guid).catch((err) => {
                     console.log("Error while subscribing to game: " + err)
                 });
@@ -49,6 +66,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         }).catch((err) => {
             console.log("Error while starting connection: " + err)
         });
+        setConnection(connection);
     }
 
     const sendAction = async (action: Action) => {
@@ -59,18 +77,12 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
 
     const fetchData = async () => {
         console.log('fetching game state');
+        setDataFetched(true);
         try {
-            const response = await fetch(
-                str, {
-                method: "GET",
-                headers: {
-                    "Authorization": bearer
-                }
-            });
-            const data = await response.json();
+            const data = await fetchGameState(str, bearer);
             setGameState(data);
             const arrLvl = [data.board.level1, data.board.level2, data.board.level3];
-            setCards(arrLvl);   
+            setCards(arrLvl);
             setCoinBoard(data.board.coinBoard);
             setPlayer1Board(data.board.player1Board);
             setPlayer2Board(data.board.player2Board);
@@ -85,11 +97,14 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     useEffect(() => {
         if (!props.guid) {
             return;
-        }       
-            setUpSignalRConection();
-
-        fetchData();
-    }, [str, bearer, props.guid]);
+        }
+        if (!connection || (connection.state !== HubConnectionState.Connected && connection.state !== HubConnectionState.Connecting)) {
+            setUpSignalRConection();            
+        }
+        if (!dataFetched) {
+            fetchData();
+        }
+    }, [str, bearer, props.guid, gameState, player1Turn]);
 
     if (!gameState) {
         return <div>Loading...</div>;

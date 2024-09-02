@@ -30,3 +30,7 @@
     display: inline-block;
     margin: 0 auto;
 }
+.scrolls{
+    font-size: larger;
+    font-weight: bold;
+}
