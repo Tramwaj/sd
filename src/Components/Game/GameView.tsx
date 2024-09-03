@@ -44,10 +44,10 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         connection.on("ReceiveActionStatus", (status, app) => {
             console.log("ActionStatus received: " + status + app);
         });
-        connection.on("ReceivePlayerBoard", (playerBoard, playerName) => {
+        connection.on("ReceivePlayerBoard", (playerBoard) => {
             console.log("PlayerBoard received: " + playerBoard);
             const board = createPlayerBoardFromResponse(playerBoard);
-            if (gameState?.player1.name === playerName) {
+            if (player1Board?.player.name === playerBoard.player.name) {
                 //setPlayer1Board(null);
                 setPlayer1Board(board);
             } else {

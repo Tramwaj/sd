@@ -28,6 +28,7 @@ const createPlayerBoard =() => {
         miningValues.set(colour, cards.reduce((acc, card) => acc + card.miningPower, 0));
     });
     const player1Board: PlayerBoard = {
+        player: { id: "1", name: "Player1" },
         hiddenCards: [],
         scrollsCount: 1,
         pointsByColour: pointsByColour,

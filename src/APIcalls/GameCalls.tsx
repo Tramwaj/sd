@@ -59,6 +59,7 @@ export const fetchGameState = async (url: string, bearer: string): Promise<GameS
 }
 export const createPlayerBoardFromResponse = (playerBoardJson: any): PlayerBoard => {
     return {
+        player: playerBoardJson.player,
         hiddenCards: playerBoardJson.hiddenCards,
         scrollsCount: playerBoardJson.scrollsCount,
         pointsByColour: new Map(Object.entries(playerBoardJson.pointsByColour).map(([key, value]) => [ColourEnum[key as keyof typeof ColourEnum], value as number])),

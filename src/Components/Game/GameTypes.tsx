@@ -2,8 +2,6 @@ export type GameState = {
     gameId: string;
     player1Turn: boolean;
     board: Board;
-    player1: Player;
-    player2: Player;
     lastAction: string;
 }
 export type Player = {
@@ -27,6 +25,7 @@ export type CoinBoard = {
     scrollCount: number;
 }
 export type PlayerBoard = {
+    player: Player;
     hiddenCards: Card[];
     scrollsCount: number;
     pointsByColour: Map<ColourEnum, number>;
