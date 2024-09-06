@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AuthContext } from '../../Store/authContext';
 import { Action, CardLevel, CoinBoard, GameState, PlayerBoard } from './GameTypes';
 import CardBoard from './CardBoard';
@@ -15,6 +15,8 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const [cards, setCards] = useState<CardLevel[]>([]);
     const [coinBoard, setCoinBoard] = useState<CoinBoard | null>(null);
     const [player1Board, setPlayer1Board] = useState<PlayerBoard | null>(null);
+    const player1BoardRef = useRef<PlayerBoard | null>(null);
+    const player2BoardRef = useRef<PlayerBoard | null>(null);
     const [player2Board, setPlayer2Board] = useState<PlayerBoard | null>(null);
     const [player1Turn, setPlayer1Turn] = useState<boolean>(true);
     const [dataFetched, setDataFetched] = useState<boolean>(false);
@@ -47,10 +49,11 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         connection.on("ReceivePlayerBoard", (playerBoard) => {
             console.log("PlayerBoard received: " + playerBoard);
             const board = createPlayerBoardFromResponse(playerBoard);
-            if (player1Board?.player.name === playerBoard.player.name) {
+            if (player1BoardRef.current?.player.name === board.player.name) {
                 //setPlayer1Board(null);
                 setPlayer1Board(board);
-            } else {
+            }
+            if (player2BoardRef.current?.player.name === board.player.name) {
                 //setPlayer1Board(null);
                 setPlayer2Board(board);
             }
@@ -69,10 +72,10 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         setConnection(connection);
     }
 
+
     const sendAction = async (action: Action) => {
         action.gameId = props.guid;
         const response = await postAction(action);
-
     }
 
     const fetchData = async () => {
@@ -99,11 +102,13 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             return;
         }
         if (!connection || (connection.state !== HubConnectionState.Connected && connection.state !== HubConnectionState.Connecting)) {
-            setUpSignalRConection();            
+            setUpSignalRConection();
         }
         if (!dataFetched) {
             fetchData();
         }
+        player1BoardRef.current = player1Board;
+        player2BoardRef.current = player2Board;        
     }, [str, bearer, props.guid, gameState, player1Turn]);
 
     if (!gameState) {

@@ -92,3 +92,8 @@ export enum ActionType {
     GetNoble = "getNoble",
     TradeScroll = "tradeScroll",
 }
+export type CoinRequest = {
+    i: number;
+    j: number;
+    colour: ColourEnum;
+}
