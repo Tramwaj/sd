@@ -1,6 +1,7 @@
 export type GameState = {
     gameId: string;
     player1Turn: boolean;
+    actionState: string,
     board: Board;
     lastAction: string;
 }

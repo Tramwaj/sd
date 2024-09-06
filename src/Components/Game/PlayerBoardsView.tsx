@@ -6,9 +6,10 @@ import { create } from "domain";
 import createPlayerBoard from "./FakeData/FakePlayersBoards";
 
 
-const PlayerBoardsView: React.FC<{ player1board: PlayerBoard, player2Board: PlayerBoard, player1Turn: boolean }> = (props) => {
+const PlayerBoardsView: React.FC<{ player1board: PlayerBoard, player2Board: PlayerBoard, player1Turn: boolean, actionState: string }> = (props) => {
     const [player1Board, setPlayer1Board] = React.useState<PlayerBoard | null>(null);
     const [player2Board, setPlayer2Board] = React.useState<PlayerBoard | null>(null);
+    const [actionState, setActionState] = React.useState<string>("Normal");
     const [colours, setColours] = React.useState<ColourEnum[]>([]);
     const [groupedCards, setGroupedCards] = React.useState<Map<ColourEnum, Card[]>>(new Map());
     useEffect(() => {
@@ -22,7 +23,7 @@ const PlayerBoardsView: React.FC<{ player1board: PlayerBoard, player2Board: Play
         setColours(colours);
         setGroupedCards(groupedCards);
         //setPlayer1Board(player1Board);
-    }, [props.player1board, props.player2Board]);
+    }, [props.player1board, props.player2Board, props.player1Turn, props.actionState]);
 
     return (
         <div className="playerBoards">

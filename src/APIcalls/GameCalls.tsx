@@ -18,7 +18,7 @@ export const postAction = async (action: Action) => {
                 console.log("Action sent");
             }
             else{
-                const data = await response.json();
+                const data = await response.text();
                 console.log("error: ", data);
             }
         } catch (error) {

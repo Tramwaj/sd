@@ -3,13 +3,15 @@ import { Action, ActionType, CoinBoard, CoinRequest, ColourEnum } from "./GameTy
 import "./CoinBoardView.css";
 import { fontColour } from "../Globals/StyleFunctions";
 
-const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, sendAction: (action:Action) => void }> = (props) => {
+const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState:string, sendAction: (action:Action) => void }> = (props) => {
     const [coinBoard, setCoinBoard] = React.useState<CoinBoard | null>(null);
     const [selectedCoins, setSelectedCoins] = React.useState<CoinRequest[]>([]);
+    const [actionState, setActionState] = React.useState<string>("Normal");
 
     useEffect(() => {
         setCoinBoard(props.coinBoardProps);
-    }, [props.coinBoardProps, selectedCoins]);
+        setActionState(props.actionState);
+    }, [props.coinBoardProps, selectedCoins, props.actionState]);
 
     const selectCoin = (event: React.MouseEvent<HTMLButtonElement>) => {
         const coords = event.currentTarget.id;

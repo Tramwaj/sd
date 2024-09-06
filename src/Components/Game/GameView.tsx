@@ -21,6 +21,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const [player1Turn, setPlayer1Turn] = useState<boolean>(true);
     const [dataFetched, setDataFetched] = useState<boolean>(false);
     const [connection, setConnection] = useState<HubConnection | null>(null);
+    const [actionState, setActionState] = useState<string>("");
     const authCtx = useContext(AuthContext);
     const bearer = "Bearer " + authCtx.token;
     const str = `https://localhost:5001/Game/GetGameState?id=${props.guid}`;
@@ -43,12 +44,15 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             console.log("CoinBoard received: " + coinBoard);
             setCoinBoard(coinBoard);
         });
-        connection.on("ReceiveActionStatus", (status, app) => {
-            console.log("ActionStatus received: " + status + app);
+        connection.on("ReceiveActionStatus", (status) => {
+            console.log("ActionStatus received: " + status);
+            changeActionState(status);
         });
         connection.on("ReceivePlayerBoard", (playerBoard) => {
             console.log("PlayerBoard received: " + playerBoard);
             const board = createPlayerBoardFromResponse(playerBoard);
+            console.log("player1board: " +player1BoardRef.current);
+            console.log("player1board: " +player2BoardRef.current);
             if (player1BoardRef.current?.player.name === board.player.name) {
                 //setPlayer1Board(null);
                 setPlayer1Board(board);
@@ -72,10 +76,23 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         setConnection(connection);
     }
 
+    const changeActionState = (status: string) => {
+        if (status = "EndTurn") {
+            setPlayer1Turn(!player1Turn);
+            setActionState("Normal");
+        } else {
+            setActionState(status);
+        }
+    }
+
 
     const sendAction = async (action: Action) => {
-        action.gameId = props.guid;
-        const response = await postAction(action);
+        action.gameId = gameState?.gameId;
+        try {
+            const response = await postAction(action);
+        } catch (error) {
+            console.error('Error sending action:', error);
+        }
     }
 
     const fetchData = async () => {
@@ -90,6 +107,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             setPlayer1Board(data.board.player1Board);
             setPlayer2Board(data.board.player2Board);
             setPlayer1Turn(data.player1Turn);
+            setActionState(data.actionState);
             // console.log("cards in gameview:",cards);
             // console.log("gamestate in gameview:",gameState);
             // console.log("level1 in gameview:",gameState?.board.level1);
@@ -108,8 +126,8 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             fetchData();
         }
         player1BoardRef.current = player1Board;
-        player2BoardRef.current = player2Board;        
-    }, [str, bearer, props.guid, gameState, player1Turn]);
+        player2BoardRef.current = player2Board;  
+    }, [str, bearer, props.guid, gameState, player1Turn, actionState, player1Board, player2Board, dataFetched, connection]);
 
     if (!gameState) {
         return <div>Loading...</div>;
@@ -120,14 +138,14 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         <div id="grid">
             <div id="playerBoards">
                 {(player1Board) && (player2Board) &&
-                    <PlayerBoardsView player1board={player1Board} player2Board={player2Board} player1Turn={player1Turn} />
+                    <PlayerBoardsView player1board={player1Board} player2Board={player2Board} player1Turn={player1Turn} actionState={actionState} />
                 }
             </div>
             <div id="cards">
-                {(cards) && <CardBoard cardsProps={cards} />}
+                {(cards) && <CardBoard cardsProps={cards} actionState={actionState} />}
             </div>
             <div id="coinBoard">
-                {(coinBoard) && <CoinBoardView sendAction={sendAction} coinBoardProps={coinBoard} />}
+                {(coinBoard) && <CoinBoardView sendAction={sendAction} coinBoardProps={coinBoard} actionState={actionState} />}
             </div>
         </div>
     );
