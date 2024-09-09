@@ -1,25 +1,34 @@
 import React, { useEffect } from "react";
 import "./CardView.css";
-import { Card, ColourEnum } from "./GameTypes";
+import { Action, ActionType, BuyCardRequest, Card, ColourEnum } from "./GameTypes";
 import { ReactComponent as Crown } from "./whiteCrown.svg";
 import { Button } from "react-bootstrap";
 import { cardDisplayColour, fontColour } from "../Globals/StyleFunctions";
 
 //todo: insert the smaller "coin" (as on CoinBoard) in the card cost
-const CardView: React.FC<{ cardProps: Card, selectCard: (cardId: number | undefined) => void }> = (props) => {
+const CardView: React.FC<{ cardProps: Card, selectCard: (action:Action) => void }> = (props) => {
     const [card, setCard] = React.useState<Card | null>(null);
     const [cardColour, setCardColour] = React.useState<ColourEnum>(ColourEnum.White);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        if (card !== null && card.id !== undefined)
-            props.selectCard(card?.id);
+        if (card !== null && card.id !== undefined){
+            const cardRequest: BuyCardRequest = {
+                cardId: card.id,
+                colour: card.colour, //todo: ask for card coolour when colour == multi
+            }
+            const action = {
+                type: ActionType.BuyCard,
+                payload: cardRequest,
+            }
+            props.selectCard(action);
+        }
     };
     
     useEffect(() => {
         setCard(props.cardProps);
         setCardColour(props.cardProps.colour);
-        console.log("CardView mounted");
-        if (card) console.log("cardProps:", card);
-    }, [props.cardProps]);
+        //console.log("CardView mounted");
+        //if (card) console.log("cardProps:", card);
+    }, [props.cardProps, card]);
     return (
         { card } && <button className="card-container box" onClick={handleClick}>
             <div className="top" style={{ backgroundColor: cardDisplayColour(cardColour), color: fontColour(cardColour) }}>

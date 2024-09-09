@@ -81,7 +81,7 @@ export enum CardActionEnum {
 }
 export type Action = {
     type: ActionType;
-    gameId: string | undefined;
+    gameId?: string | undefined;
     payload: any;
 }
 export enum ActionType {
@@ -96,5 +96,9 @@ export enum ActionType {
 export type CoinRequest = {
     i: number;
     j: number;
+    colour: ColourEnum;
+}
+export type BuyCardRequest = {
+    cardId: number;
     colour: ColourEnum;
 }

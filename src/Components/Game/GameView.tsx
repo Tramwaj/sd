@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AuthContext } from '../../Store/authContext';
 import { Action, CardLevel, CoinBoard, GameState, PlayerBoard } from './GameTypes';
-import CardBoard from './CardBoard';
 import CoinBoardView from './CoinBoardView';
 import './GameView.css';
 import PlayerBoardsView from './PlayerBoardsView';
 import { HubConnection, HubConnectionBuilder, HubConnectionState, IHttpConnectionOptions } from '@microsoft/signalr';
 import { createPlayerBoardFromResponse, postAction } from '../../APIcalls/GameCalls';
 import { fetchGameState as fetchGameState } from '../../APIcalls/GameCalls';
+import CardsLevelView from './CardsLevel';
 
 
 const GameView: React.FC<{ guid: string | undefined }> = (props) => {
@@ -17,6 +17,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const [player1Board, setPlayer1Board] = useState<PlayerBoard | null>(null);
     const player1BoardRef = useRef<PlayerBoard | null>(null);
     const player2BoardRef = useRef<PlayerBoard | null>(null);
+    const cardsRef = useRef<CardLevel[]>([]);
     const [player2Board, setPlayer2Board] = useState<PlayerBoard | null>(null);
     const [player1Turn, setPlayer1Turn] = useState<boolean>(true);
     const [dataFetched, setDataFetched] = useState<boolean>(false);
@@ -46,22 +47,31 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         });
         connection.on("ReceiveActionStatus", (status) => {
             console.log("ActionStatus received: " + status);
+            //todo: display message (temp + persistent)
             changeActionState(status);
         });
         connection.on("ReceivePlayerBoard", (playerBoard) => {
-            console.log("PlayerBoard received: " + playerBoard);
+            console.log("PlayerBoard received: ", playerBoard);
             const board = createPlayerBoardFromResponse(playerBoard);
-            console.log("player1board: " +player1BoardRef.current);
-            console.log("player1board: " +player2BoardRef.current);
-            if (player1BoardRef.current?.player.name === board.player.name) {
-                //setPlayer1Board(null);
+            console.log("zrobiony board: ", board);
+            console.log("player1board: " + player1BoardRef.current);
+            console.log("player1board: " + player2BoardRef.current);
+            if (playerBoard.player.name === player1BoardRef.current?.player.name) {
                 setPlayer1Board(board);
+                console.log("Player1Board chagnged");
             }
-            if (player2BoardRef.current?.player.name === board.player.name) {
-                //setPlayer1Board(null);
+            if (player2BoardRef.current?.player.name === playerBoard.player.name) {
                 setPlayer2Board(board);
+                console.log("Player2Board chagnged");
             }
         });
+        connection.on("ReceiveCardLevel", (cardLevel, level) => {
+            console.log("CardLevel received: " + level, cardLevel);
+            const newCards = [cardsRef.current[0], cardsRef.current[1], cardsRef.current[2]];
+            newCards[level] = cardLevel;
+            setCards(newCards);
+        });
+
 
         connection.start().then(() => {
             console.log("Connection started");
@@ -126,8 +136,9 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             fetchData();
         }
         player1BoardRef.current = player1Board;
-        player2BoardRef.current = player2Board;  
-    }, [str, bearer, props.guid, gameState, player1Turn, actionState, player1Board, player2Board, dataFetched, connection]);
+        player2BoardRef.current = player2Board;
+        cardsRef.current = cards;
+    }, [str, bearer, props.guid, gameState, player1Turn, actionState, player1Board, player2Board, dataFetched, connection, coinBoard]);
 
     if (!gameState) {
         return <div>Loading...</div>;
@@ -142,7 +153,9 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
                 }
             </div>
             <div id="cards">
-                {(cards) && <CardBoard cardsProps={cards} actionState={actionState} />}
+                {cards?.[2] && <CardsLevelView levelProps={cards[2]} actionState={actionState} sendAction={sendAction} />}
+                {cards?.[1] && <CardsLevelView levelProps={cards[1]} actionState={actionState} sendAction={sendAction} />}
+                {cards?.[0] && <CardsLevelView levelProps={cards[0]} actionState={actionState} sendAction={sendAction} />}
             </div>
             <div id="coinBoard">
                 {(coinBoard) && <CoinBoardView sendAction={sendAction} coinBoardProps={coinBoard} actionState={actionState} />}
