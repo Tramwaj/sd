@@ -45,9 +45,15 @@
 }
 .bot{
     flex:4;
-    color:black;
     display: flex;
-    flex-flow: column-reverse;
+    flex-flow: row;
+    justify-content: stretch;
+}
+.dots{
+    flex:4;
+    display: flex;
+    color:black;
+    flex-flow: column-reverse;    
 }
 .dot{
     font-size: 80%;
@@ -57,4 +63,11 @@
     display: inline-block;
     text-align: center;
     margin:1px;
+}
+.action{
+    flex:1;
+    display: flex;
+    flex-flow: row;
+    justify-content: flex-end;
+    align-items: flex-end;
 }

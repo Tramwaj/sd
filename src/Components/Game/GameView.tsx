@@ -18,11 +18,13 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const player1BoardRef = useRef<PlayerBoard | null>(null);
     const player2BoardRef = useRef<PlayerBoard | null>(null);
     const cardsRef = useRef<CardLevel[]>([]);
+    const messagesRef = useRef<React.ReactNode[]>([]);
     const [player2Board, setPlayer2Board] = useState<PlayerBoard | null>(null);
     const [player1Turn, setPlayer1Turn] = useState<boolean>(true);
     const [dataFetched, setDataFetched] = useState<boolean>(false);
     const [connection, setConnection] = useState<HubConnection | null>(null);
     const [actionState, setActionState] = useState<string>("");
+    const [messages, setMessages] = useState<React.ReactNode[]>([]);
     const authCtx = useContext(AuthContext);
     const bearer = "Bearer " + authCtx.token;
     const str = `https://localhost:5001/Game/GetGameState?id=${props.guid}`;
@@ -45,8 +47,12 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             console.log("CoinBoard received: " + coinBoard);
             setCoinBoard(coinBoard);
         });
-        connection.on("ReceiveActionStatus", (status) => {
+        connection.on("ReceiveActionStatus", (status,message) => {
             console.log("ActionStatus received: " + status);
+            const newMessages = [...messagesRef.current];
+            newMessages.push(<div key={newMessages.length}>{status + ":" + message}</div>);
+            setMessages(newMessages);
+            if (message==="") console.log("failed action - no change in status");
             //todo: display message (temp + persistent)
             changeActionState(status);
         });
@@ -138,7 +144,8 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         player1BoardRef.current = player1Board;
         player2BoardRef.current = player2Board;
         cardsRef.current = cards;
-    }, [str, bearer, props.guid, gameState, player1Turn, actionState, player1Board, player2Board, dataFetched, connection, coinBoard]);
+        messagesRef.current = messages;
+    }, [str, bearer, props.guid, gameState, player1Turn, actionState, player1Board, player2Board, dataFetched, connection, coinBoard, messages]);
 
     if (!gameState) {
         return <div>Loading...</div>;
@@ -157,8 +164,13 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
                 {cards?.[1] && <CardsLevelView levelProps={cards[1]} actionState={actionState} sendAction={sendAction} />}
                 {cards?.[0] && <CardsLevelView levelProps={cards[0]} actionState={actionState} sendAction={sendAction} />}
             </div>
-            <div id="coinBoard">
+            <div id="coinBoardRow">
+                <div id="coinBoard">
                 {(coinBoard) && <CoinBoardView sendAction={sendAction} coinBoardProps={coinBoard} actionState={actionState} />}
+                </div>
+                <div id="chat">
+                    {messages}
+                </div>
             </div>
         </div>
     );
