@@ -1,7 +1,7 @@
 export type GameState = {
     gameId: string;
     player1Turn: boolean;
-    actionState: string,
+    actionState: ActionStateEnum;
     board: Board;
     lastAction: string;
 }
@@ -101,4 +101,13 @@ export type CoinRequest = {
 export type BuyCardRequest = {
     cardId: number;
     colour: ColourEnum;
+}
+export enum ActionStateEnum {
+    Normal = "Normal",
+    EndTurn = "EndTurn",
+    DropCoins = "DropCoins",
+    ExchangeScroll = "ExchangeScroll",
+    ReserveCard = "ReserveCard",
+    StealCoin = "StealCoin"
+
 }

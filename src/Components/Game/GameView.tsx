@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AuthContext } from '../../Store/authContext';
-import { Action, CardLevel, CoinBoard, GameState, PlayerBoard } from './GameTypes';
+import { Action, ActionStateEnum, CardLevel, CoinBoard, GameState, PlayerBoard } from './GameTypes';
 import CoinBoardView from './CoinBoardView';
 import './GameView.css';
 import PlayerBoardsView from './PlayerBoardsView';
@@ -23,7 +23,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const [player1Turn, setPlayer1Turn] = useState<boolean>(true);
     const [dataFetched, setDataFetched] = useState<boolean>(false);
     const [connection, setConnection] = useState<HubConnection | null>(null);
-    const [actionState, setActionState] = useState<string>("");
+    const [actionState, setActionState] = useState<ActionStateEnum>(ActionStateEnum.Normal);
     const [messages, setMessages] = useState<React.ReactNode[]>([]);
     const authCtx = useContext(AuthContext);
     const bearer = "Bearer " + authCtx.token;
@@ -54,6 +54,14 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             setMessages(newMessages);
             if (message==="") console.log("failed action - no change in status");
             //todo: display message (temp + persistent)
+            changeActionState(status);
+        });
+        connection.on("ReceivePersonalActionSTatus", (status, message) => {
+            console.log("PersonalActionStatus received: " + status);
+            const newMessages = [...messagesRef.current];
+            newMessages.push(<div key={newMessages.length}>{status + ":" + message + "(prv)"}</div>);
+            setMessages(newMessages);
+            if (message==="") console.log("failed action - no change in status");
             changeActionState(status);
         });
         connection.on("ReceivePlayerBoard", (playerBoard) => {
@@ -92,11 +100,12 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         setConnection(connection);
     }
 
-    const changeActionState = (status: string) => {
-        if (status = "EndTurn") {
+    const changeActionState = (status: ActionStateEnum) => {
+        if (status = ActionStateEnum.EndTurn) {
             setPlayer1Turn(!player1Turn);
-            setActionState("Normal");
-        } else {
+            setActionState(ActionStateEnum.Normal);            
+        }
+        else {
             setActionState(status);
         }
     }
@@ -156,7 +165,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         <div id="grid">
             <div id="playerBoards">
                 {(player1Board) && (player2Board) &&
-                    <PlayerBoardsView player1board={player1Board} player2Board={player2Board} player1Turn={player1Turn} actionState={actionState} />
+                    <PlayerBoardsView player1board={player1Board} player2Board={player2Board} player1Turn={player1Turn} actionState={actionState} sendAction={sendAction}/>
                 }
             </div>
             <div id="cards">

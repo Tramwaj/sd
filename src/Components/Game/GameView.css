@@ -15,10 +15,15 @@
 #coinBoardRow{
     
 }
-#coinBoard{}
+#coinBoard{
+    height:60%;
+}
 #chat{
     border: 1px solid black;
     height: 30%;
     scroll-margin-right: 10px;
     overflow: scroll;
+    position: fixed;
+    bottom: 0;
+    width: 25%;
 }

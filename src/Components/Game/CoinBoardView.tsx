@@ -17,7 +17,7 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState:string, s
         const coords = event.currentTarget.id;
         const colour = event.currentTarget.style.backgroundColor;
         if (colour === "grey"){
-            showAlert("You can't select a grey coin");
+            showAlert("There is no coin here");
             return;
         }
         const i = parseInt(coords.split("/")[1]);

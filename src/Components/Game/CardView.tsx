@@ -9,6 +9,7 @@ import { cardDisplayColour, fontColour } from "../Globals/StyleFunctions";
 const CardView: React.FC<{ cardProps: Card, selectCard: (action: Action) => void }> = (props) => {
     const [card, setCard] = React.useState<Card | null>(null);
     const [cardColour, setCardColour] = React.useState<ColourEnum>(ColourEnum.White);
+    
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         if (card !== null && card.id !== undefined) {
             const cardRequest: BuyCardRequest = {
