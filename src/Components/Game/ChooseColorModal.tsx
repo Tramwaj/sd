@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { ActionType, ColourEnum } from "./GameTypes";
 import { Button, Modal } from "react-bootstrap";
+import "./ChooseColorModal.css";
 import React from "react";
 
 export const ChooseColorModal: React.FC<{ show: boolean, handleClose: () => void, sendColour: (colour: ColourEnum) => void }> = (props) => {
@@ -30,7 +31,7 @@ return (
         <Modal.Body>
             <div className="colourSelect">
                 {colours.map((colour) => (
-                    <button key={colour} onClick={handleColourSelect} style={{ backgroundColor: colour.toString() }}>
+                    <button className="colourBtn" key={colour} onClick={handleColourSelect} style={{ backgroundColor: colour.toString() }}>
                     </button>
                 ))}
             </div>
