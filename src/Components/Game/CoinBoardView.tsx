@@ -54,9 +54,6 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
     }
 
     const sendBoardShuffleAction = (event: React.MouseEvent<HTMLButtonElement>) => {
-        if (selectedCoins.some(x=>x.colour==ColourEnum.Grey || x.colour==ColourEnum.Gold)){
-            return;
-        }
         const action: Action = {
             type: ActionType.ShuffleCoins,
             gameId: undefined,
@@ -65,6 +62,9 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
         props.sendAction(action);
     }
     const sendCoinRequest = (event: React.MouseEvent<HTMLButtonElement>) => {
+        if (selectedCoins.some(x=>x.colour==ColourEnum.Grey || x.colour==ColourEnum.Gold)){
+            return;
+        }
         const action: Action = {
             type: ActionType.GetCoins,
             gameId: undefined,
