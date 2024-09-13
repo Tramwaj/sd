@@ -73,6 +73,15 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
         props.sendAction(action);
         setSelectedCoins([]);
     }
+    const exchangeScroll = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const action: Action = {
+            type: ActionType.TradeScroll,
+            gameId: undefined,
+            payload: selectedCoins[0]
+        }
+        props.sendAction(action);
+        setSelectedCoins([]);
+    }
     const borderIfSelected = (i: number, j: number, coinColour: ColourEnum) => {
         if (selectedCoins.find((coin) => coin.i === i && coin.j === j)) {
             return "2px solid black";
@@ -100,7 +109,7 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
                 <button className="shuffleBtn" onClick={sendBoardShuffleAction}>Shuffle</button>
                 <button className="CancelBtn" onClick={clearSelectedCoins}>Cancel</button>
                 <button className="ConfirmBtn" onClick={sendCoinRequest} disabled={selectedCoins.length < 1 ? true : false}>Confirm</button>
-                <button className="scrollBtn" onClick={sendCoinRequest} disabled={selectedCoins.length !== 1 ? true : false}>Trade Scroll</button>
+                <button className="scrollBtn" onClick={exchangeScroll} disabled={selectedCoins.length !== 1 ? true : false}>Trade Scroll</button>
             </div>
         </div>
     );
