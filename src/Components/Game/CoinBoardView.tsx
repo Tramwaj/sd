@@ -62,7 +62,12 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
         props.sendAction(action);
     }
     const sendCoinRequest = (event: React.MouseEvent<HTMLButtonElement>) => {
-        if (selectedCoins.some(x=>x.colour==ColourEnum.Grey || x.colour==ColourEnum.Gold)){
+        if (selectedCoins.some(x=>x.colour==ColourEnum.Grey.toLocaleLowerCase())){
+            showAlert("You can't select empty spaces");
+            return;
+        }
+              if (selectedCoins.some(x=>x.colour==ColourEnum.Gold.toLocaleLowerCase())){
+            showAlert("You can't select gold coins");
             return;
         }
         const action: Action = {
@@ -74,6 +79,10 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
         setSelectedCoins([]);
     }
     const exchangeScroll = (event: React.MouseEvent<HTMLButtonElement>) => {
+        if (selectedCoins[0].colour === ColourEnum.Gold.toLocaleLowerCase()) {
+            showAlert("You can't trade for gold coins");
+            return;
+        }
         const action: Action = {
             type: ActionType.TradeScroll,
             gameId: undefined,
