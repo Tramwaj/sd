@@ -3,7 +3,7 @@ import { Action, ActionType, CoinBoard, CoinRequest, ColourEnum } from "./GameTy
 import "./CoinBoardView.css";
 import { fontColour } from "../Globals/StyleFunctions";
 
-const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState:string, sendAction: (action:Action) => void }> = (props) => {
+const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, sendAction: (action: Action) => void }> = (props) => {
     const [coinBoard, setCoinBoard] = React.useState<CoinBoard | null>(null);
     const [selectedCoins, setSelectedCoins] = React.useState<CoinRequest[]>([]);
     const [actionState, setActionState] = React.useState<string>("Normal");
@@ -16,7 +16,7 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState:string, s
     const selectCoin = (event: React.MouseEvent<HTMLButtonElement>) => {
         const coords = event.currentTarget.id;
         const colour = event.currentTarget.style.backgroundColor;
-        if (colour === "grey"){
+        if (colour === "grey") {
             showAlert("There is no coin here");
             return;
         }
@@ -36,25 +36,28 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState:string, s
             case 0:
                 return true;
             case 1:
-                return (Math.abs(selectedCoins[0].i - i)<=1 && Math.abs(selectedCoins[0].j - j) <= 1);
+                return (Math.abs(selectedCoins[0].i - i) <= 1 && Math.abs(selectedCoins[0].j - j) <= 1);
             case 2:
                 const diffx = Math.abs(selectedCoins[0].i - selectedCoins[1].i);
                 const diffy = Math.abs(selectedCoins[0].j - selectedCoins[1].j);
                 return (Math.abs(selectedCoins[0].i - i) === diffx && Math.abs(selectedCoins[0].j - j) === diffy ||
-                (Math.abs(selectedCoins[1].i - i) === diffx && Math.abs(selectedCoins[1].j - j) === diffy));
+                    (Math.abs(selectedCoins[1].i - i) === diffx && Math.abs(selectedCoins[1].j - j) === diffy));
             default:
                 return false;
         }
     }
     const showAlert = (msg: string) => {
         alert(msg);
-    }    
+    }
     const clearSelectedCoins = (event: React.MouseEvent<HTMLButtonElement>) => {
         setSelectedCoins([]);
     }
 
     const sendBoardShuffleAction = (event: React.MouseEvent<HTMLButtonElement>) => {
-        const action:Action = {
+        if (selectedCoins.some(x=>x.colour==ColourEnum.Grey || x.colour==ColourEnum.Gold)){
+            return;
+        }
+        const action: Action = {
             type: ActionType.ShuffleCoins,
             gameId: undefined,
             payload: ""
@@ -62,7 +65,7 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState:string, s
         props.sendAction(action);
     }
     const sendCoinRequest = (event: React.MouseEvent<HTMLButtonElement>) => {
-        const action:Action = {
+        const action: Action = {
             type: ActionType.GetCoins,
             gameId: undefined,
             payload: selectedCoins
@@ -76,12 +79,12 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState:string, s
         }
         return "none";
     }
-    
+
     return (
-        <div className="coinBoardContainer">
+        { coinBoard } && <div className="coinBoardContainer">
             <div className="board">
                 {props.coinBoardProps.coinsOnBoard.map((nested, y) => nested.map((coin, x) =>
-                    <div key={x*100+y} className="coinSpace" style={{border: borderIfSelected(y, x, coin)}}>
+                    <div key={x * 100 + y} className="coinSpace" style={{ border: borderIfSelected(y, x, coin) }}>
                         <button key={x * 10 + y}
                             id={x.toString() + "/" + y.toString()}
                             onClick={selectCoin}
@@ -96,7 +99,8 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState:string, s
             <div className="coinBoardFooter">
                 <button className="shuffleBtn" onClick={sendBoardShuffleAction}>Shuffle</button>
                 <button className="CancelBtn" onClick={clearSelectedCoins}>Cancel</button>
-                <button className="ConfirmBtn" onClick={sendCoinRequest} disabled={selectedCoins.length<1?true:false}>Confirm</button>
+                <button className="ConfirmBtn" onClick={sendCoinRequest} disabled={selectedCoins.length < 1 ? true : false}>Confirm</button>
+                <button className="scrollBtn" onClick={sendCoinRequest} disabled={selectedCoins.length !== 1 ? true : false}>Trade Scroll</button>
             </div>
         </div>
     );
