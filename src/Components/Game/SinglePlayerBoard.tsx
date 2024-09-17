@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Action, ActionStateEnum, Card, ColourEnum, PlayerBoard } from './GameTypes';
+import { Action, ActionStateEnum, ActionType, Card, ColourEnum, PlayerBoard } from './GameTypes';
 import { fontColour } from '../Globals/StyleFunctions';
 import "./SinglePlayerBoard.css";
 
@@ -8,16 +8,41 @@ const SinglePlayerBoard: React.FC<{ pb: PlayerBoard, actionState: ActionStateEnu
     const [colours, setColours] = React.useState<ColourEnum[]>([]);
     const [playerTurn, setPlayerTurn] = React.useState<boolean>(true);
     const [actionState, setActionState] = React.useState<string>("Normal");
+    const [coinsToBeDropped, setCoinsToBeDropped] = React.useState<ColourEnum[]>([]);
     useEffect(() => {
         setPlayerBoard(props.pb);
         const colours = [ColourEnum.White, ColourEnum.Blue, ColourEnum.Green, ColourEnum.Red, ColourEnum.Black];
         setColours(colours);
         setPlayerTurn(playerTurn);
         setActionState(props.actionState);
-    }, [props.pb, props.actionState, props.sendAction]);
+        console.log("SinglePlayerBoard mounted");
+    }, [props.pb, props.actionState, props.sendAction, playerBoard]);
 
     const handleCoinsClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         console.log("Coin clicked");
+        const colour = event.currentTarget.name;
+        const coins = [...coinsToBeDropped];
+        coins.push(colour as ColourEnum);
+        setCoinsToBeDropped(coins);
+        let newPB = playerBoard;
+        if (newPB){
+            const oldCoins = newPB.coins?.get(colour as ColourEnum);
+            const newCoins = (oldCoins??0)-1;
+            newPB?.coins?.set(colour as ColourEnum, newCoins);
+        }
+        setPlayerBoard(newPB);
+        let coinsCount=0;
+        playerBoard?.coins?.forEach((value) => {
+            coinsCount+=value;
+        });        
+        if (coinsCount===10){
+            const action: Action = {
+                type: ActionType.DropCoins,
+                gameId: undefined,
+                payload: coins
+            }
+            props.sendAction(action);
+        }
     }
     const turnDependantBorder = () => {
         const colour = playerTurn ? "green" : "red";
@@ -45,7 +70,7 @@ const SinglePlayerBoard: React.FC<{ pb: PlayerBoard, actionState: ActionStateEnu
                             <div className="coins">
                                 {playerBoard.coins?.get(colour) ?
                                     Array.from(Array(playerBoard.coins?.get(colour)), (_, i) =>
-                                        <button className="coinDot" key={i} onClick={handleCoinsClick} style={{ backgroundColor: fontColour(colour) }}>
+                                        <button className="coinDot" key={i} name={colour} disabled={actionState!=ActionStateEnum.DropCoins.toString()} onClick={handleCoinsClick} style={{ backgroundColor: fontColour(colour) }}>
 
                                         </button>)
                                     : ""}

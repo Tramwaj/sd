@@ -54,7 +54,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             setMessages(newMessages);
             if (message==="") console.log("failed action - no change in status");
             //todo: display message (temp + persistent)
-            changeActionState(status);
+            if (status) changeActionState(status);
         });
         connection.on("ReceivePersonalActionSTatus", (status, message) => {
             console.log("PersonalActionStatus received: " + status);
@@ -72,11 +72,11 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             console.log("player1board: " + player2BoardRef.current);
             if (playerBoard.player.name === player1BoardRef.current?.player.name) {
                 setPlayer1Board(board);
-                console.log("Player1Board chagnged");
+                console.log("Player1Board changed");
             }
             if (player2BoardRef.current?.player.name === playerBoard.player.name) {
                 setPlayer2Board(board);
-                console.log("Player2Board chagnged");
+                console.log("Player2Board changed");
             }
         });
         connection.on("ReceiveCardLevel", (cardLevel, level) => {
@@ -101,7 +101,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     }
 
     const changeActionState = (status: ActionStateEnum) => {
-        if (status = ActionStateEnum.EndTurn) {
+        if (status === ActionStateEnum.EndTurn) {
             setPlayer1Turn(!player1Turn);
             setActionState(ActionStateEnum.Normal);            
         }
