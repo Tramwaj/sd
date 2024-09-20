@@ -105,11 +105,24 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
         props.sendAction(action);
         setSelectedCoins([]);
     }
+    const pickupCoin = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const action: Action = {
+            type: ActionType.PickupCoin,
+            gameId: undefined,
+            payload: selectedCoins[0]
+        }
+        props.sendAction(action);
+        setSelectedCoins([]);
+    }
     const borderIfSelected = (i: number, j: number, coinColour: ColourEnum) => {
         if (selectedCoins.find((coin) => coin.i === i && coin.j === j)) {
             return "2px solid black";
         }
         return "none";
+    }
+
+    const areCoinsDisabled = (): boolean => {        
+        return (actionState??"Normal") !== ActionStateEnum.Normal.toString() && !actionState.includes(ActionStateEnum.Pickup.toString())
     }
 
     return (
@@ -118,7 +131,7 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
                 {props.coinBoardProps.coinsOnBoard.map((nested, y) => nested.map((coin, x) =>
                     <div key={x * 100 + y} className="coinSpace" style={{ border: borderIfSelected(y, x, coin) }}>
                         <button key={x * 10 + y}
-                            disabled= {(actionState??"Normal") !== ActionStateEnum.Normal.toString() && !actionState.includes(ActionStateEnum.Pickup.toString())}
+                            disabled= {areCoinsDisabled()}
                             id={x.toString() + "/" + y.toString()}
                             onClick={selectCoin}
                             className="coin" style={{
@@ -132,9 +145,10 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
             <div className="coinBoardFooter" >
                 <button id="shuffleBtn" onClick={sendBoardShuffleAction}>Shuffle</button>
                 <button id="CancelBtn" onClick={clearSelectedCoins}>Cancel</button>
-                <button id="ConfirmBtn" onClick={sendCoinRequest} disabled={selectedCoins.length < 1}>Confirm</button>
+                <button id="ConfirmBtn" onClick={sendCoinRequest} disabled={selectedCoins.length < 1}>Take coins</button>
                 <button id="scrollBtn" onClick={exchangeScroll} disabled={selectedCoins.length !== 1}>Trade Scroll</button>
-                <button id="reserveBtn" onClick={takeGoldCoin} disabled={selectedCoins.length !== 1}>Reserve</button>
+                <button id="reserveBtn" onClick={takeGoldCoin} disabled={selectedCoins.length !== 1}>Reserve</button>  
+                <button id="pickupCoin" onClick={pickupCoin} disabled={actionState !== ActionStateEnum.Pickup.toString() || selectedCoins.length !== 1}>Pickup</button>          
             </div>
         </div>
     );
