@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AuthContext } from '../../Store/authContext';
-import { Action, ActionStateEnum, CardLevel, CoinBoard, GameState, PlayerBoard } from './GameTypes';
+import { Action, ActionStateEnum, ActionType, CardLevel, CoinBoard, GameState, PlayerBoard } from './GameTypes';
 import CoinBoardView from './CoinBoardView';
 import './GameView.css';
 import PlayerBoardsView from './PlayerBoardsView';
@@ -47,21 +47,17 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             console.log("CoinBoard received: " + coinBoard);
             setCoinBoard(coinBoard);
         });
-        connection.on("ReceiveActionStatus", (status,message) => {
+        connection.on("ReceiveActionStatus", (status, message) => {
             console.log("ActionStatus received: " + status);
-            const newMessages = [...messagesRef.current];
-            newMessages.push(<div key={newMessages.length}>{status + ":" + message}</div>);
-            setMessages(newMessages);
-            if (message==="") console.log("failed action - no change in status");
+            updateMessages(message, status);
+            if (message === "") console.log("failed action - no change in status");
             //todo: display message (temp + persistent)
             if (status) changeActionState(status);
         });
         connection.on("ReceivePersonalActionSTatus", (status, message) => {
             console.log("PersonalActionStatus received: " + status);
-            const newMessages = [...messagesRef.current];
-            newMessages.push(<div key={newMessages.length}>{status + ":" + message + "(prv)"}</div>);
-            setMessages(newMessages);
-            if (message==="") console.log("failed action - no change in status");
+            updateMessages(message, status);
+            if (message === "") console.log("failed action - no change in status");
             changeActionState(status);
         });
         connection.on("ReceivePlayerBoard", (playerBoard) => {
@@ -100,10 +96,16 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         setConnection(connection);
     }
 
+    const updateMessages = (message: string, status: string) => {
+        const newMessages: React.ReactNode[] = [...messagesRef.current];
+        const newMessage: React.ReactNode[] = [<div key={newMessages.length}>{status + ":" + message + "(prv)"}</div>];
+        setMessages(newMessage.concat(newMessages));
+    }
+
     const changeActionState = (status: ActionStateEnum) => {
         if (status === ActionStateEnum.EndTurn) {
             setPlayer1Turn(!player1Turn);
-            setActionState(ActionStateEnum.Normal);            
+            setActionState(ActionStateEnum.Normal);
         }
         else {
             setActionState(status);
@@ -113,6 +115,9 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
 
     const sendAction = async (action: Action) => {
         action.gameId = gameState?.gameId;
+        if (action.type === ActionType.BuyCard && actionState === ActionStateEnum.ReserveCard) {
+            action.type = ActionType.ReserveCard;
+        }
         try {
             const response = await postAction(action);
         } catch (error) {
@@ -165,7 +170,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         <div id="grid">
             <div id="playerBoards">
                 {(player1Board) && (player2Board) &&
-                    <PlayerBoardsView player1board={player1Board} player2Board={player2Board} player1Turn={player1Turn} actionState={actionState} sendAction={sendAction}/>
+                    <PlayerBoardsView player1board={player1Board} player2Board={player2Board} player1Turn={player1Turn} actionState={actionState} sendAction={sendAction} />
                 }
             </div>
             <div id="cards">
@@ -175,7 +180,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             </div>
             <div id="coinBoardRow">
                 <div id="coinBoard">
-                {(coinBoard) && <CoinBoardView sendAction={sendAction} coinBoardProps={coinBoard} actionState={actionState} />}
+                    {(coinBoard) && <CoinBoardView sendAction={sendAction} coinBoardProps={coinBoard} actionState={actionState} />}
                 </div>
                 <div id="chat">
                     {messages}

@@ -89,9 +89,12 @@ export enum ActionType {
     DropCoins = "dropCoins",
     ShuffleCoins = "shuffleCoins",
     BuyCard = "buyCard",
+    TakeGoldCoin = "takeGoldCoin",
     ReserveCard = "reserveCard",
     GetNoble = "getNoble",
     TradeScroll = "tradeScroll",
+    StealCoin = "stealCoin",
+    PickupCoin = "pickupCoin",
 }
 export type CoinRequest = {
     i: number;
@@ -106,8 +109,8 @@ export enum ActionStateEnum {
     Normal = "Normal",
     EndTurn = "EndTurn",
     DropCoins = "DropCoins",
-    ExchangeScroll = "ExchangeScroll",
     ReserveCard = "ReserveCard",
-    StealCoin = "StealCoin"
-
+    StealCoin = "StealCoin",
+    Pickup = "Pickup",
+    GetNoble = "GetNoble"
 }

@@ -1,0 +1,12 @@
+.deck{
+    display: flex;
+    flex-flow: column;
+    width: 6%;
+    aspect-ratio: 1/1.5;
+    min-height: 10vh;
+    min-width: 5vw;
+    margin-right: 3px;
+    background-color:rgb(53, 26, 26);
+    font-size:100%;
+    color:white;
+}

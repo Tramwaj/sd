@@ -1,7 +1,7 @@
 #grid {
     display: grid;
     justify-content: stretch;
-    grid-template-columns: 0.5fr 2fr 1fr;
+    grid-template-columns: 0.8fr 2fr 1fr;
     grid-template-rows: 4fr 1fr;
     height: 80vh;
     align-items: stretch;
@@ -26,4 +26,5 @@
     position: fixed;
     bottom: 0;
     width: 25%;
+    font-size: 0.9em;
 }

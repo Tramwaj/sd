@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Action, ActionType, CoinBoard, CoinRequest, ColourEnum } from "./GameTypes";
+import { Action, ActionStateEnum, ActionType, CoinBoard, CoinRequest, ColourEnum } from "./GameTypes";
 import "./CoinBoardView.css";
 import { fontColour } from "../Globals/StyleFunctions";
 
@@ -11,7 +11,8 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
     useEffect(() => {
         setCoinBoard(props.coinBoardProps);
         setActionState(props.actionState);
-    }, [props.coinBoardProps, selectedCoins, props.actionState]);
+        setSelectedCoins([]);
+    }, [props.coinBoardProps, props.actionState]);
 
     const selectCoin = (event: React.MouseEvent<HTMLButtonElement>) => {
         const coords = event.currentTarget.id;
@@ -91,6 +92,19 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
         props.sendAction(action);
         setSelectedCoins([]);
     }
+    const takeGoldCoin = (event: React.MouseEvent<HTMLButtonElement>) => {
+        if (selectedCoins[0].colour !== ColourEnum.Gold.toLocaleLowerCase()) {
+            showAlert("You can only use gold coins to reserve!");
+            return;
+        }
+        const action: Action = {
+            type: ActionType.TakeGoldCoin,
+            gameId: undefined,
+            payload: selectedCoins[0]
+        }
+        props.sendAction(action);
+        setSelectedCoins([]);
+    }
     const borderIfSelected = (i: number, j: number, coinColour: ColourEnum) => {
         if (selectedCoins.find((coin) => coin.i === i && coin.j === j)) {
             return "2px solid black";
@@ -104,6 +118,7 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
                 {props.coinBoardProps.coinsOnBoard.map((nested, y) => nested.map((coin, x) =>
                     <div key={x * 100 + y} className="coinSpace" style={{ border: borderIfSelected(y, x, coin) }}>
                         <button key={x * 10 + y}
+                            disabled= {(actionState??"Normal") !== ActionStateEnum.Normal.toString() && !actionState.includes(ActionStateEnum.Pickup.toString())}
                             id={x.toString() + "/" + y.toString()}
                             onClick={selectCoin}
                             className="coin" style={{
@@ -114,11 +129,12 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
                 ))}
             </div>
             <div className="Scrolls">{coinBoard?.scrollCount}</div>
-            <div className="coinBoardFooter">
-                <button className="shuffleBtn" onClick={sendBoardShuffleAction}>Shuffle</button>
-                <button className="CancelBtn" onClick={clearSelectedCoins}>Cancel</button>
-                <button className="ConfirmBtn" onClick={sendCoinRequest} disabled={selectedCoins.length < 1 ? true : false}>Confirm</button>
-                <button className="scrollBtn" onClick={exchangeScroll} disabled={selectedCoins.length !== 1 ? true : false}>Trade Scroll</button>
+            <div className="coinBoardFooter" >
+                <button id="shuffleBtn" onClick={sendBoardShuffleAction}>Shuffle</button>
+                <button id="CancelBtn" onClick={clearSelectedCoins}>Cancel</button>
+                <button id="ConfirmBtn" onClick={sendCoinRequest} disabled={selectedCoins.length < 1}>Confirm</button>
+                <button id="scrollBtn" onClick={exchangeScroll} disabled={selectedCoins.length !== 1}>Trade Scroll</button>
+                <button id="reserveBtn" onClick={takeGoldCoin} disabled={selectedCoins.length !== 1}>Reserve</button>
             </div>
         </div>
     );

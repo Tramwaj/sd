@@ -9,7 +9,7 @@
     flex-flow: column;
     width: 6%;
     aspect-ratio: 1/1.5;
-    min-height: 10vh;
+    min-height: 5vh;
     min-width: 5vw;
     margin-right: 3px;
     background-color:grey;

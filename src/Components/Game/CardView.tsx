@@ -7,7 +7,7 @@ import { cardDisplayColour, fontColour } from "../Globals/StyleFunctions";
 import { ChooseColorModal } from "./ChooseColorModal";
 
 //todo: insert the smaller "coin" (as on CoinBoard) in the card cost
-const CardView: React.FC<{ cardProps: Card, selectCard: (action: Action) => void }> = (props) => {
+const CardView: React.FC<{ cardProps: Card, selectCard: (action: Action) => void, enabled: boolean }> = (props) => {
     const [card, setCard] = React.useState<Card | null>(null);
     const [cardColour, setCardColour] = React.useState<ColourEnum>(ColourEnum.White);
     const [isChooseColorModalOpen, setIsChooseColorModalOpen] = React.useState<boolean>(false);
@@ -55,7 +55,7 @@ const CardView: React.FC<{ cardProps: Card, selectCard: (action: Action) => void
     }, [props.cardProps, card, isChooseColorModalOpen]);
     return (
         <div>
-            {card && <button className="card-container box" onClick={handleClick}>
+            {card && <button className="card-container box" onClick={handleClick} disabled={!props.enabled}>
                 <div className="top" style={{ backgroundColor: cardDisplayColour(cardColour), color: fontColour(cardColour) }}>
                     <div className="points">{card?.points}</div>
                     <div className="crowns">
@@ -79,8 +79,7 @@ const CardView: React.FC<{ cardProps: Card, selectCard: (action: Action) => void
                 </div>
             </button>}
             { isChooseColorModalOpen && <ChooseColorModal show={isChooseColorModalOpen} handleClose={() => setIsChooseColorModalOpen(false)} sendColour={sendMultiColouredCard} />}
-        </div>
-        
+        </div>        
     );
 
 }
