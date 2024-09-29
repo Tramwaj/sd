@@ -12,6 +12,7 @@ import CardsLevelView from './CardsLevel';
 
 const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const [gameState, setGameState] = useState<GameState | null>(null);
+    const [isActivePlayer, setIsActivePlayer] = useState<boolean>(false);
     const [cards, setCards] = useState<CardLevel[]>([]);
     const [coinBoard, setCoinBoard] = useState<CoinBoard | null>(null);
     const [player1Board, setPlayer1Board] = useState<PlayerBoard | null>(null);
@@ -20,6 +21,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const cardsRef = useRef<CardLevel[]>([]);
     const messagesRef = useRef<React.ReactNode[]>([]);
     const [player2Board, setPlayer2Board] = useState<PlayerBoard | null>(null);
+    const []
     const [player1Turn, setPlayer1Turn] = useState<boolean>(true);
     const [dataFetched, setDataFetched] = useState<boolean>(false);
     const [connection, setConnection] = useState<HubConnection | null>(null);
@@ -81,7 +83,10 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             newCards[level] = cardLevel;
             setCards(newCards);
         });
+        connection.on("receiveNobles", (nobles) => {
+            console.log("Nobles received: " + nobles);
 
+        });
 
         connection.start().then(() => {
             console.log("Connection started");
@@ -105,6 +110,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const changeActionState = (status: ActionStateEnum) => {
         if (status === ActionStateEnum.EndTurn) {
             setPlayer1Turn(!player1Turn);
+            setIsActivePlayer(!isActivePlayer);
             setActionState(ActionStateEnum.Normal);
         }
         else {
@@ -131,13 +137,14 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         try {
             const data = await fetchGameState(str, bearer);
             setGameState(data);
-            const arrLvl = [data.board.level1, data.board.level2, data.board.level3];
+            const arrLvl = [data.board.level1, data.board.level2, data.board.level3];            
             setCards(arrLvl);
             setCoinBoard(data.board.coinBoard);
             setPlayer1Board(data.board.player1Board);
             setPlayer2Board(data.board.player2Board);
             setPlayer1Turn(data.player1Turn);
             setActionState(data.actionState);
+            setIsActivePlayer(authCtx.user === (data.player1Turn ? data.board.player1Board.player.name : data.board.player2Board.player.name));
             // console.log("cards in gameview:",cards);
             // console.log("gamestate in gameview:",gameState);
             // console.log("level1 in gameview:",gameState?.board.level1);
@@ -155,6 +162,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         if (!dataFetched) {
             fetchData();
         }
+
         player1BoardRef.current = player1Board;
         player2BoardRef.current = player2Board;
         cardsRef.current = cards;
@@ -170,7 +178,12 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         <div id="grid">
             <div id="playerBoards">
                 {(player1Board) && (player2Board) &&
-                    <PlayerBoardsView player1board={player1Board} player2Board={player2Board} player1Turn={player1Turn} actionState={actionState} sendAction={sendAction} />
+                    <PlayerBoardsView player1board={player1Board} 
+                        player2Board={player2Board} 
+                        player1Turn={player1Turn} 
+                        actionState={actionState} 
+                        sendAction={sendAction} 
+                        isActivePlayer={isActivePlayer}/>
                 }
             </div>
             <div id="cards">

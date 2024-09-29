@@ -38,8 +38,8 @@
     justify-content: left;
 }
 .rect{
-    height: 80%;
-    width:1.4em;
+    height: 40%;
+    width: 15%;
     display: inline-block;
     margin:1px;
 }

@@ -5,7 +5,7 @@ import { fontColour } from "../Globals/StyleFunctions";
 import SinglePlayerBoard from "./SinglePlayerBoard";
 
 
-const PlayerBoardsView: React.FC<{ player1board: PlayerBoard, player2Board: PlayerBoard, player1Turn: boolean, actionState: ActionStateEnum, sendAction: (action:Action) => void }> = (props) => {
+const PlayerBoardsView: React.FC<{ player1board: PlayerBoard, player2Board: PlayerBoard, player1Turn: boolean, isActivePlayer:boolean, actionState: ActionStateEnum, sendAction: (action:Action) => void }> = (props) => {
     const [player1Board, setPlayer1Board] = React.useState<PlayerBoard | null>(null);
     const [player2Board, setPlayer2Board] = React.useState<PlayerBoard | null>(null);
     const [actionState, setActionState] = React.useState<ActionStateEnum>(ActionStateEnum.Normal);
@@ -20,10 +20,10 @@ const PlayerBoardsView: React.FC<{ player1board: PlayerBoard, player2Board: Play
     
     return (
         <div className="playerBoards">
-            {player1Board ? <SinglePlayerBoard pb={player1Board} actionState={actionState} playerTurn={player1Turn} sendAction={props.sendAction} />: (
+            {player1Board ? <SinglePlayerBoard pb={player1Board} actionState={actionState} playerTurn={player1Turn} isActivePlayer={props.isActivePlayer} sendAction={props.sendAction} />: (
                 <div>Loading...</div>
             )}
-            {player2Board ? <SinglePlayerBoard pb={player2Board} actionState={actionState} playerTurn={!player1Turn} sendAction={props.sendAction} />: (
+            {player2Board ? <SinglePlayerBoard pb={player2Board} actionState={actionState} playerTurn={!player1Turn} isActivePlayer={props.isActivePlayer} sendAction={props.sendAction} />: (
                 <div>Loading...</div>
             )}
         </div>

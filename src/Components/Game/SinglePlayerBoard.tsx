@@ -4,7 +4,7 @@ import { fontColour } from '../Globals/StyleFunctions';
 import "./SinglePlayerBoard.css";
 import CardView from './CardView';
 
-const SinglePlayerBoard: React.FC<{ pb: PlayerBoard, actionState: ActionStateEnum, playerTurn: boolean, sendAction: (action: Action) => void }> = (props) => {
+const SinglePlayerBoard: React.FC<{ pb: PlayerBoard, actionState: ActionStateEnum, playerTurn: boolean, isActivePlayer:boolean, sendAction: (action: Action) => void }> = (props) => {
     const [playerBoard, setPlayerBoard] = React.useState<PlayerBoard | null>(null);
     const [colours, setColours] = React.useState<ColourEnum[]>([]);
     const [playerTurn, setPlayerTurn] = React.useState<boolean>(true);
@@ -58,11 +58,11 @@ const SinglePlayerBoard: React.FC<{ pb: PlayerBoard, actionState: ActionStateEnu
         const colour = playerTurn ? "green" : "red";
         return `2px solid ${colour}`;
     }
-    const isCoinDisabled = () => {
-        return playerTurn ? actionState !== ActionStateEnum.DropCoins.toString() : actionState !== ActionStateEnum.StealCoin.toString();
-
+    const isCoinEnabled = () => {
+        if (!props.isActivePlayer) return false;
+        return playerTurn ? actionState === ActionStateEnum.DropCoins.toString() : actionState === ActionStateEnum.StealCoin.toString();
     }
-
+    
     return (
         <div>
             {playerBoard ? (
@@ -85,7 +85,7 @@ const SinglePlayerBoard: React.FC<{ pb: PlayerBoard, actionState: ActionStateEnu
                                 <div className="coins">
                                     {playerBoard.coins?.get(colour) ?
                                         Array.from(Array(playerBoard.coins?.get(colour)), (_, i) =>
-                                            <button className="coinDot" key={i} name={colour} disabled={isCoinDisabled()} onClick={handleCoinsClick} style={{ backgroundColor: fontColour(colour) }}>
+                                            <button className="coinDot" key={i} name={colour} disabled={!isCoinEnabled()} onClick={handleCoinsClick} style={{ backgroundColor: fontColour(colour) }}>
 
                                             </button>)
                                         : ""}

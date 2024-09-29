@@ -148,7 +148,7 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
                 <button id="ConfirmBtn" onClick={sendCoinRequest} disabled={selectedCoins.length < 1}>Take coins</button>
                 <button id="scrollBtn" onClick={exchangeScroll} disabled={selectedCoins.length !== 1}>Trade Scroll</button>
                 <button id="reserveBtn" onClick={takeGoldCoin} disabled={selectedCoins.length !== 1}>Reserve</button>  
-                <button id="pickupCoin" onClick={pickupCoin} disabled={actionState !== ActionStateEnum.Pickup.toString() || selectedCoins.length !== 1}>Pickup</button>          
+                <button id="pickupCoin" onClick={pickupCoin} disabled={!actionState.includes(ActionStateEnum.Pickup.toString()) && selectedCoins.length !== 1}>Pickup</button>          
             </div>
         </div>
     );
