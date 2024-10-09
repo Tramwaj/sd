@@ -4,6 +4,7 @@ export type GameState = {
     actionState: ActionStateEnum;
     board: Board;
     lastAction: string;
+    actions : string[];
 }
 export type Player = {
     name: string;
