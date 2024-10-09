@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Action, ActionStateEnum, ActionType, CoinBoard, CoinRequest, ColourEnum } from "./GameTypes";
 import "./CoinBoardView.css";
 import { fontColour } from "../Globals/StyleFunctions";
+type Visibility = "visible" | "hidden" | "collapse";
 
 const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, sendAction: (action: Action) => void }> = (props) => {
     const [coinBoard, setCoinBoard] = React.useState<CoinBoard | null>(null);
@@ -25,6 +26,9 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
         const j = parseInt(coords.split("/")[0]);
         if (!checkCoinPosition(i, j)) {
             showAlert("You can't select this coin");
+            return;
+        }
+        if (selectedCoins.some(x=>x.i==i && x.j==j)){
             return;
         }
         const newSelectedCoins = [...selectedCoins];
@@ -124,6 +128,19 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
     const areCoinsDisabled = (): boolean => {        
         return (actionState??"Normal") !== ActionStateEnum.Normal.toString() && !actionState.includes(ActionStateEnum.Pickup.toString())
     }
+    const takeCoinsBtnVisiblility = (): Visibility => {
+        return selectedCoins.length >= 1 ? "visible" : "collapse";
+    }
+    const tradeScrollBtnVisiblility = (): Visibility => {
+        return selectedCoins.length === 1 ? "visible" : "collapse";
+    }
+    const reserveBtnVisibility = (): Visibility => {
+        return selectedCoins.length === 1 && selectedCoins[0].colour===ColourEnum.Gold.toLocaleLowerCase() ?  "visible" : "collapse";
+    }
+    const pickupCoinBtnVisibility = (): Visibility => {
+        return actionState.includes(ActionStateEnum.Pickup.toString()) ? "visible" : "collapse";
+    }
+
 
     return (
         { coinBoard } && <div className="coinBoardContainer">
@@ -144,11 +161,11 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
             <div className="Scrolls">{coinBoard?.scrollCount}</div>
             <div className="coinBoardFooter" >
                 <button id="shuffleBtn" onClick={sendBoardShuffleAction}>Shuffle</button>
-                <button id="CancelBtn" onClick={clearSelectedCoins}>Cancel</button>
-                <button id="ConfirmBtn" onClick={sendCoinRequest} disabled={selectedCoins.length < 1}>Take coins</button>
-                <button id="scrollBtn" onClick={exchangeScroll} disabled={selectedCoins.length !== 1}>Trade Scroll</button>
-                <button id="reserveBtn" onClick={takeGoldCoin} disabled={selectedCoins.length !== 1}>Reserve</button>  
-                <button id="pickupCoin" onClick={pickupCoin} disabled={!actionState.includes(ActionStateEnum.Pickup.toString()) && selectedCoins.length !== 1}>Pickup</button>          
+                <button id="CancelBtn" onClick={clearSelectedCoins}>Clear</button>
+                <button id="TakeCoinsBtn" onClick={sendCoinRequest} style={{ visibility: takeCoinsBtnVisiblility()}} disabled={selectedCoins.length < 1}>Take coins</button>
+                <button id="scrollBtn" onClick={exchangeScroll} style={{visibility: tradeScrollBtnVisiblility()}} disabled={selectedCoins.length !== 1}>Trade Scroll</button>
+                <button id="reserveBtn" onClick={takeGoldCoin} style={{ visibility: reserveBtnVisibility()}} disabled={selectedCoins.length !== 1}>Reserve</button>  
+                <button id="pickupCoin" onClick={pickupCoin} style={{visibility: pickupCoinBtnVisibility()}} disabled={!actionState.includes(ActionStateEnum.Pickup.toString()) && selectedCoins.length !== 1}>Pickup</button>          
             </div>
         </div>
     );

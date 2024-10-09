@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AuthContext } from '../../Store/authContext';
-import { Action, ActionStateEnum, ActionType, CardLevel, CoinBoard, GameState, PlayerBoard } from './GameTypes';
+import { Action, ActionStateEnum, ActionType, CardLevel, CoinBoard, GameState, Noble, PlayerBoard } from './GameTypes';
 import CoinBoardView from './CoinBoardView';
 import './GameView.css';
 import PlayerBoardsView from './PlayerBoardsView';
@@ -8,6 +8,7 @@ import { HubConnection, HubConnectionBuilder, HubConnectionState, IHttpConnectio
 import { createPlayerBoardFromResponse, postAction } from '../../APIcalls/GameCalls';
 import { fetchGameState as fetchGameState } from '../../APIcalls/GameCalls';
 import CardsLevelView from './CardsLevel';
+import Nobles from './Nobles';
 
 
 const GameView: React.FC<{ guid: string | undefined }> = (props) => {
@@ -21,7 +22,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const cardsRef = useRef<CardLevel[]>([]);
     const messagesRef = useRef<React.ReactNode[]>([]);
     const [player2Board, setPlayer2Board] = useState<PlayerBoard | null>(null);
-    const []
+    const [nobles,setNobles] = useState<Noble[]>([]);
     const [player1Turn, setPlayer1Turn] = useState<boolean>(true);
     const [dataFetched, setDataFetched] = useState<boolean>(false);
     const [connection, setConnection] = useState<HubConnection | null>(null);
@@ -85,7 +86,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         });
         connection.on("receiveNobles", (nobles) => {
             console.log("Nobles received: " + nobles);
-
+            setNobles(nobles);
         });
 
         connection.start().then(() => {
@@ -142,6 +143,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             setCoinBoard(data.board.coinBoard);
             setPlayer1Board(data.board.player1Board);
             setPlayer2Board(data.board.player2Board);
+            setNobles(data.board.nobles);
             setPlayer1Turn(data.player1Turn);
             setActionState(data.actionState);
             setIsActivePlayer(authCtx.user === (data.player1Turn ? data.board.player1Board.player.name : data.board.player2Board.player.name));
@@ -187,6 +189,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
                 }
             </div>
             <div id="cards">
+                <Nobles nobles={nobles} sendAction={sendAction} actionState={actionState}/>                
                 {cards?.[2] && <CardsLevelView levelProps={cards[2]} actionState={actionState} sendAction={sendAction} />}
                 {cards?.[1] && <CardsLevelView levelProps={cards[1]} actionState={actionState} sendAction={sendAction} />}
                 {cards?.[0] && <CardsLevelView levelProps={cards[0]} actionState={actionState} sendAction={sendAction} />}

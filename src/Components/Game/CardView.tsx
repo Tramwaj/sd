@@ -15,6 +15,9 @@ const CardView: React.FC<{ cardProps: Card, selectCard: (action: Action) => void
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         if (card !== null && card.id !== undefined) {
+            if (card.colour === ColourEnum.Grey && card.points === 0 && card.miningPower === 0) {
+                return;
+            }
             if (card.colour === ColourEnum.Multi) {
                 setIsChooseColorModalOpen(true);
                 return;

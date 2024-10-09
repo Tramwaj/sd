@@ -34,3 +34,11 @@
     font-size: larger;
     font-weight: bold;
 }
+.coinBoardFooter{
+    display: flex;
+    flex-flow: row;
+    justify-content:flex-start;
+    width: 80%;
+    height: 10%;
+    margin-top: 10px;
+}

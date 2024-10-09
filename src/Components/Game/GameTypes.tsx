@@ -15,7 +15,8 @@ export type Board = {
     level3: CardLevel,
     coinBoard: CoinBoard,
     player1Board: PlayerBoard,
-    player2Board: PlayerBoard
+    player2Board: PlayerBoard,
+    nobles: Noble[],
 }
 export type CardLevel = {
     exposed: Array<Card>;
@@ -46,6 +47,10 @@ export type Card = {
     cardCost: SingleCost[];
     action?: CardActionEnum;
 }
+export type Noble = {    
+    points: number;
+    action?: CardActionEnum;
+}
 export type SingleCost = {
     colour: ColourEnum;
     amount: number;
@@ -74,7 +79,7 @@ export enum ColourEnumFont {
 }
 export enum CardActionEnum {
     ExtraTurn = 1,
-    CoinPickup = 2,
+    Pickup = 2,
     Steal = 3,
     Scroll = 4,
     None = 5
