@@ -10,14 +10,18 @@ const SinglePlayerBoard: React.FC<{ pb: PlayerBoard, actionState: ActionStateEnu
     const [playerTurn, setPlayerTurn] = React.useState<boolean>(true);
     const [actionState, setActionState] = React.useState<string>("Normal");
     const [coinsToBeDropped, setCoinsToBeDropped] = React.useState<ColourEnum[]>([]);
+    const [borderColour, setBorderColour] = React.useState<string>("2px solid grey");
     useEffect(() => {
         setPlayerBoard(props.pb);
         const colours = [ColourEnum.White, ColourEnum.Blue, ColourEnum.Green, ColourEnum.Red, ColourEnum.Black];
         setColours(colours);
-        setPlayerTurn(props.playerTurn);
         setActionState(props.actionState);
         console.log("SinglePlayerBoard mounted");
-    }, [props.pb, props.actionState, props.sendAction, playerBoard, playerTurn]);
+    }, [props.pb, props.actionState]);
+    useEffect(() => {
+        setPlayerTurn(props.playerTurn);  
+        setBorderColour(turnDependantBorder(props.playerTurn));      
+    },[props.playerTurn]);
 
     const handleCoinsClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         console.log("Coin clicked");
@@ -54,7 +58,7 @@ const SinglePlayerBoard: React.FC<{ pb: PlayerBoard, actionState: ActionStateEnu
             props.sendAction(action);
         }
     }
-    const turnDependantBorder = () => {
+    const turnDependantBorder = (playerTurn:boolean) => {
         const colour = playerTurn ? "green" : "red";
         return `2px solid ${colour}`;
     }
@@ -66,7 +70,7 @@ const SinglePlayerBoard: React.FC<{ pb: PlayerBoard, actionState: ActionStateEnu
     return (
         <div>
             {playerBoard ? (
-                <div className="playerBoard" style={{ border: turnDependantBorder() }}>
+                <div className="playerBoard" style={{ border: borderColour }}>
                     <div className="mainBoard">
                         <div className="totals">
                             <div>{playerBoard.player.name}</div>

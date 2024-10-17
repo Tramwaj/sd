@@ -9,6 +9,7 @@ import { createPlayerBoardFromResponse, postAction } from '../../APIcalls/GameCa
 import { fetchGameState as fetchGameState } from '../../APIcalls/GameCalls';
 import CardsLevelView from './CardsLevel';
 import Nobles from './Nobles';
+import ActionNotifier from './ActionNotifier';
 
 
 const GameView: React.FC<{ guid: string | undefined }> = (props) => {
@@ -28,6 +29,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
     const [connection, setConnection] = useState<HubConnection | null>(null);
     const [actionState, setActionState] = useState<ActionStateEnum>(ActionStateEnum.Normal);
     const [messages, setMessages] = useState<React.ReactNode[]>([]);
+    const [playerName, setPlayerName] = useState<string>("");
     const authCtx = useContext(AuthContext);
     const bearer = "Bearer " + authCtx.token;
     const str = `https://localhost:5001/Game/GetGameState?id=${props.guid}`;
@@ -55,13 +57,13 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             updateMessages(message, status);
             if (message === "") console.log("failed action - no change in status");
             //todo: display message (temp + persistent)
-            if (status) changeActionState(status);
+            if (status) setActionState(status);
         });
         connection.on("ReceivePersonalActionSTatus", (status, message) => {
             console.log("PersonalActionStatus received: " + status);
             updateMessages(message, status);
             if (message === "") console.log("failed action - no change in status");
-            changeActionState(status);
+            //changeActionState(status);
         });
         connection.on("ReceivePlayerBoard", (playerBoard) => {
             console.log("PlayerBoard received: ", playerBoard);
@@ -88,6 +90,12 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             console.log("Nobles received: " + nobles);
             setNobles(nobles);
         });
+        connection.on("ReceivePlayerTurn", (playerTurn) => {
+            console.log("PlayerTurn received: " + playerTurn);
+            setPlayer1Turn(playerTurn);
+            setIsActivePlayer(authCtx.user === (playerTurn ? player1Board?.player.name : player2Board?.player.name));
+            setPlayerName((playerTurn ? player1Board?.player.name : player2Board?.player.name) ?? "unnamed");
+        });
 
         connection.start().then(() => {
             console.log("Connection started");
@@ -107,19 +115,6 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
         const newMessage: React.ReactNode[] = [<div key={newMessages.length}>{status + ":" + message + "(prv)"}</div>];
         setMessages(newMessage.concat(newMessages));
     }
-
-    const changeActionState = (status: ActionStateEnum) => {
-        if (status === ActionStateEnum.EndTurn) {
-            setPlayer1Turn(!player1Turn);
-            setIsActivePlayer(!isActivePlayer);
-            setActionState(ActionStateEnum.Normal);
-        }
-        else {
-            setActionState(status);
-        }
-    }
-
-
     const sendAction = async (action: Action) => {
         action.gameId = gameState?.gameId;
         if (action.type === ActionType.BuyCard && actionState === ActionStateEnum.ReserveCard) {
@@ -147,6 +142,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
             setPlayer1Turn(data.player1Turn);
             setActionState(data.actionState);
             setIsActivePlayer(authCtx.user === (data.player1Turn ? data.board.player1Board.player.name : data.board.player2Board.player.name));
+            setPlayerName(data.player1Turn ? data.board.player1Board.player.name : data.board.player2Board.player.name);
 
             let messages: string[] = [];
             messages = data.actions.reverse();
@@ -198,6 +194,7 @@ const GameView: React.FC<{ guid: string | undefined }> = (props) => {
                 }
             </div>
             <div id="cards">
+                <ActionNotifier actionState={actionState} playerName={player1Turn ? player1Board?.player.name : player2Board?.player.name} />
                 <Nobles nobles={nobles} sendAction={sendAction} actionState={actionState} />
                 {cards?.[2] && <CardsLevelView levelProps={cards[2]} actionState={actionState} sendAction={sendAction} />}
                 {cards?.[1] && <CardsLevelView levelProps={cards[1]} actionState={actionState} sendAction={sendAction} />}
