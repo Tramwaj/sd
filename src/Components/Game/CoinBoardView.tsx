@@ -129,7 +129,7 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
         return (actionState??"Normal") !== ActionStateEnum.Normal.toString() && !actionState.includes(ActionStateEnum.Pickup.toString())
     }
     const takeCoinsBtnVisiblility = (): Visibility => {
-        return selectedCoins.length >= 1 ? "visible" : "collapse";
+        return selectedCoins.length >= 1 && !actionState.includes(ActionStateEnum.Pickup.toString()) ? "visible" : "collapse";
     }
     const tradeScrollBtnVisiblility = (): Visibility => {
         return selectedCoins.length === 1 ? "visible" : "collapse";
@@ -143,7 +143,7 @@ const CoinBoardView: React.FC<{ coinBoardProps: CoinBoard, actionState: string, 
 
 
     return (
-        { coinBoard } && <div className="coinBoardContainer">
+        <div className="coinBoardContainer">
             <div className="board">
                 {props.coinBoardProps.coinsOnBoard.map((nested, y) => nested.map((coin, x) =>
                     <div key={x * 100 + y} className="coinSpace" style={{ border: borderIfSelected(y, x, coin) }}>
